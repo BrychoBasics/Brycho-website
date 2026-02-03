@@ -1,0 +1,142 @@
+{
+  "images": [
+    {
+      "id": "img001",
+      "src": "images/viking-hall.jpg",
+      "thumb": "images/thumbs/viking-hall.jpg",
+      "title": "Viking Great Hall Entrance",
+      "description": "Detailed timber framing technique with decorative beam patterns. Features asymmetrical roofing and stone foundation integration.",
+      "tags": ["medieval", "timber-frame", "entrance", "large-build", "viking", "roofing"],
+      "source": {
+        "platform": "youtube",
+        "creator": "BrychoBasics",
+        "link": "https://youtube.com/watch?v=example",
+        "timestamp": "3:45"
+      },
+      "uploadDate": "2024-01-15",
+      "protected": false,
+      "relatedImages": ["img002", "img005"],
+      "additionalImages": []
+    },
+    {
+      "id": "img002",
+      "src": "images/roofing-technique.jpg",
+      "thumb": "images/thumbs/roofing-technique.jpg",
+      "title": "Advanced Roof Layering",
+      "description": "Multi-layer roofing technique using thatch and wood shingles. Creates depth and weather-resistant seal.",
+      "tags": ["roofing", "advanced", "timber-frame", "technique"],
+      "source": {
+        "platform": "youtube",
+        "creator": "BrychoBasics",
+        "link": "https://youtube.com/watch?v=example2",
+        "timestamp": "12:30"
+      },
+      "uploadDate": "2024-01-16",
+      "protected": false,
+      "relatedImages": ["img001", "img003"],
+      "additionalImages": ["images/roofing-angle1.jpg", "images/roofing-angle2.jpg"]
+    },
+    {
+      "id": "img003",
+      "src": "images/stone-archway.jpg",
+      "thumb": "images/thumbs/stone-archway.jpg",
+      "title": "Stone Archway Construction",
+      "description": "Step-by-step guide to creating stable stone arches without support beams. Uses keystone technique.",
+      "tags": ["stone", "archway", "entrance", "advanced", "technique"],
+      "source": {
+        "platform": "reddit",
+        "creator": "u/ValheimBuilder",
+        "link": "https://reddit.com/r/valheim/example"
+      },
+      "uploadDate": "2024-01-20",
+      "protected": false,
+      "relatedImages": ["img004"],
+      "additionalImages": []
+    },
+    {
+      "id": "img004",
+      "src": "images/tower-design.jpg",
+      "thumb": "images/thumbs/tower-design.jpg",
+      "title": "Circular Tower Blueprint",
+      "description": "Mathematical approach to building circular towers using core wood poles. Includes stability calculations.",
+      "tags": ["tower", "blueprint", "advanced", "large-build"],
+      "source": {
+        "platform": "custom",
+        "creator": "Brycho",
+        "link": null
+      },
+      "uploadDate": "2024-01-22",
+      "protected": true,
+      "relatedImages": [],
+      "additionalImages": []
+    },
+    {
+      "id": "img005",
+      "src": "images/interior-hall.jpg",
+      "thumb": "images/thumbs/interior-hall.jpg",
+      "title": "Great Hall Interior Layout",
+      "description": "Functional interior design for a Viking great hall. Features throne area, feast tables, and trophy displays.",
+      "tags": ["interior", "medieval", "viking", "large-build", "furniture"],
+      "source": {
+        "platform": "instagram",
+        "creator": "@valheim_builds",
+        "link": "https://instagram.com/p/example"
+      },
+      "uploadDate": "2024-01-25",
+      "protected": false,
+      "relatedImages": ["img001"],
+      "additionalImages": ["images/interior-angle1.jpg", "images/interior-angle2.jpg"]
+    },
+    {
+      "id": "img006",
+      "src": "images/bridge-technique.jpg",
+      "thumb": "images/thumbs/bridge-technique.jpg",
+      "title": "Suspension Bridge Design",
+      "description": "How to create long-span bridges using iron reinforcement and cable supports. Tested for structural integrity.",
+      "tags": ["bridge", "advanced", "iron-age", "technique", "structural"],
+      "source": {
+        "platform": "twitch",
+        "creator": "ValheimArchitect",
+        "link": "https://twitch.tv/valheimarchitect"
+      },
+      "uploadDate": "2024-01-28",
+      "protected": false,
+      "relatedImages": [],
+      "additionalImages": []
+    },
+    {
+      "id": "img007",
+      "src": "images/flooring-pattern.jpg",
+      "thumb": "images/thumbs/flooring-pattern.jpg",
+      "title": "Decorative Floor Patterns",
+      "description": "Mix wood types to create checkered and herringbone floor patterns. Adds visual interest to large rooms.",
+      "tags": ["flooring", "interior", "easy", "decorative"],
+      "source": {
+        "platform": "discord",
+        "creator": "BuildMaster#1234",
+        "link": null
+      },
+      "uploadDate": "2024-02-01",
+      "protected": false,
+      "relatedImages": [],
+      "additionalImages": []
+    },
+    {
+      "id": "img008",
+      "src": "images/lighthouse-tower.jpg",
+      "thumb": "images/thumbs/lighthouse-tower.jpg",
+      "title": "Coastal Lighthouse",
+      "description": "Tall lighthouse design with beacon room and spiral staircase. Built on rocky shore using stone foundation.",
+      "tags": ["tower", "coastal", "large-build", "stone", "beacon"],
+      "source": {
+        "platform": "web",
+        "creator": "Real-World Architecture",
+        "link": "https://example.com/lighthouse"
+      },
+      "uploadDate": "2024-02-03",
+      "protected": false,
+      "relatedImages": ["img004"],
+      "additionalImages": []
+    }
+  ]
+}

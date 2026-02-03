@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Center - Coming Soon | Brycho</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/main.css">
+    
+    <style>
+        .coming-soon-container {
+            min-height: calc(100vh - var(--header-height));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: var(--spacing-3xl);
+        }
+        
+        .coming-soon-content {
+            max-width: 600px;
+        }
+        
+        .coming-soon-icon {
+            font-size: 6rem;
+            color: var(--color-accent-primary);
+            margin-bottom: var(--spacing-xl);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        
+        .coming-soon-title {
+            font-size: 3rem;
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .coming-soon-description {
+            font-size: 1.25rem;
+            color: var(--color-text-secondary);
+            margin-bottom: var(--spacing-xl);
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <div class="header-content">
+            <div class="logo">
+                <a href="index.html">
+                    <span class="logo-text">BRYCHO</span>
+                </a>
+            </div>
+            <nav class="main-nav">
+                <a href="index.html">Home</a>
+                <a href="build-book.html">Build Book</a>
+                <a href="sign-center.html" class="active">Sign Center</a>
+                <a href="#" class="coming-soon">Blog</a>
+            </nav>
+            <div class="user-actions">
+                <button id="bookmarksBtn" class="icon-btn" title="View Bookmarks">
+                    <i class="fas fa-bookmark"></i>
+                    <span class="bookmark-count">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="coming-soon-container">
+        <div class="coming-soon-content">
+            <i class="fas fa-hammer coming-soon-icon"></i>
+            <h1 class="coming-soon-title">Sign Center</h1>
+            <p class="coming-soon-description">
+                Create and preview custom Valheim signs with Unity rich text formatting.
+                This tool is currently under construction!
+            </p>
+            <a href="build-book.html" class="btn-primary">
+                <i class="fas fa-book"></i> Visit Build Book Instead
+            </a>
+        </div>
+    </main>
+
+    <script src="js/bookmarks.js"></script>
+</body>
+</html>

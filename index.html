@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brycho - Valheim Building Resources</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/main.css">
+    
+    <style>
+        .home-hero {
+            min-height: calc(100vh - var(--header-height));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: var(--spacing-3xl) var(--spacing-lg);
+        }
+        
+        .home-content {
+            max-width: 800px;
+        }
+        
+        .home-title {
+            font-size: 5rem;
+            margin-bottom: var(--spacing-lg);
+            animation: fadeInUp 0.8s ease;
+        }
+        
+        .home-subtitle {
+            font-size: 1.5rem;
+            color: var(--color-text-secondary);
+            margin-bottom: var(--spacing-2xl);
+            animation: fadeInUp 1s ease;
+        }
+        
+        .home-links {
+            display: flex;
+            gap: var(--spacing-lg);
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 1.2s ease;
+        }
+        
+        .home-card {
+            background: var(--color-bg-secondary);
+            border: 2px solid var(--color-wood);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            width: 280px;
+            text-align: center;
+            transition: all var(--transition-base);
+            text-decoration: none;
+            display: block;
+        }
+        
+        .home-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--color-accent-primary);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .home-card i {
+            font-size: 3rem;
+            color: var(--color-accent-primary);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .home-card h2 {
+            font-size: 1.5rem;
+            margin-bottom: var(--spacing-sm);
+            color: var(--color-text-primary);
+        }
+        
+        .home-card p {
+            font-size: 1rem;
+            color: var(--color-text-secondary);
+            margin-bottom: 0;
+        }
+        
+        .coming-soon-badge {
+            display: inline-block;
+            background: var(--color-warning);
+            color: var(--color-bg-primary);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-top: var(--spacing-sm);
+        }
+        
+        @media (max-width: 768px) {
+            .home-title {
+                font-size: 3rem;
+            }
+            
+            .home-subtitle {
+                font-size: 1.125rem;
+            }
+            
+            .home-links {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <div class="header-content">
+            <div class="logo">
+                <a href="index.html">
+                    <span class="logo-text">BRYCHO</span>
+                </a>
+            </div>
+            <nav class="main-nav">
+                <a href="index.html" class="active">Home</a>
+                <a href="build-book.html">Build Book</a>
+                <a href="sign-center.html">Sign Center</a>
+                <a href="#" class="coming-soon">Blog</a>
+            </nav>
+            <div class="user-actions">
+                <button id="bookmarksBtn" class="icon-btn" title="View Bookmarks">
+                    <i class="fas fa-bookmark"></i>
+                    <span class="bookmark-count">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="home-hero">
+        <div class="home-content">
+            <h1 class="home-title">BRYCHO</h1>
+            <p class="home-subtitle">Your companion for Valheim building & creativity</p>
+            
+            <div class="home-links">
+                <a href="build-book.html" class="home-card">
+                    <i class="fas fa-book"></i>
+                    <h2>The Build Book</h2>
+                    <p>Curated building techniques and architectural inspiration</p>
+                </a>
+                
+                <a href="sign-center.html" class="home-card">
+                    <i class="fas fa-sign"></i>
+                    <h2>Sign Center</h2>
+                    <p>Create and preview custom signs with rich text formatting</p>
+                </a>
+                
+                <a href="#" class="home-card" style="opacity: 0.6; cursor: not-allowed;" onclick="return false;">
+                    <i class="fas fa-pen-fancy"></i>
+                    <h2>Blog</h2>
+                    <p>Project updates and building guides</p>
+                    <span class="coming-soon-badge">COMING SOON</span>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/bookmarks.js"></script>
+</body>
+</html>
