@@ -14,8 +14,8 @@ let currentTags = [];
 
 // Check if Supabase is configured
 function isSupabaseConfigured() {
-    return SUPABASE_URL !== 'YOUR_SUPABASE_URL' && 
-           SUPABASE_ANON_KEY !== 'YOUR_SUPABASE_ANON_KEY';
+    return SUPABASE_URL !== 'https://iuhtzvblmthenynuojtn.supabase.co' && 
+           SUPABASE_ANON_KEY !== 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml1aHR6dmJsbXRoZW55bnVvanRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA0MTAxNDYsImV4cCI6MjA4NTk4NjE0Nn0.8tzqkuh6rCbB_0TLc3K4TITI2IG-MhtUdWpuyATZPKk';
 }
 
 // Initialize
