@@ -52,25 +52,32 @@
 <body>
     <header class="site-header">
         <div class="header-content">
+            <button class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
             <div class="logo">
                 <a href="index.html">
                     <span class="logo-text">BRYCHO</span>
                 </a>
             </div>
+            
             <nav class="main-nav">
                 <a href="index.html">Home</a>
-                <a href="build-book.html">Build Book</a>
-                <a href="sign-center.html" class="active">Sign Center</a>
-                <a href="#" class="coming-soon">Blog</a>
+                <a href="valheim.html" class="active">Valheim</a>
             </nav>
-            <div class="user-actions">
-                <button id="bookmarksBtn" class="icon-btn" title="View Bookmarks">
-                    <i class="fas fa-bookmark"></i>
-                    <span class="bookmark-count">0</span>
-                </button>
-            </div>
         </div>
     </header>
+    
+    <!-- Mobile Menu -->
+    <div class="mobile-menu">
+        <a href="index.html">Home</a>
+        <a href="valheim.html">Valheim</a>
+        <a href="build-book.html">Build Book</a>
+        <a href="sign-center.html" class="active">Sign Center</a>
+    </div>
 
     <main class="coming-soon-container">
         <div class="coming-soon-content">
@@ -86,6 +93,7 @@
         </div>
     </main>
 
-    <script src="js/bookmarks.js"></script>
+    <script src="js/navigation.js"></script>
+    <script src="js/site-password.js"></script> <!-- Protected page -->
 </body>
 </html>

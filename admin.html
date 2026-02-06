@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Brycho</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+    <div id="loginScreen" class="admin-login">
+        <div class="login-box">
+            <h1>Admin Access</h1>
+            <input type="password" id="adminPassword" placeholder="Enter password">
+            <button onclick="checkAdminPassword()" class="btn-primary">
+                <i class="fas fa-unlock"></i> Login
+            </button>
+            <p id="loginError" style="color: var(--color-error); display: none;">Incorrect password</p>
+        </div>
+    </div>
+
+    <div id="adminPanel" style="display: none;">
+        <header class="site-header">
+            <div class="header-content">
+                <div class="logo">
+                    <a href="index.html"><span class="logo-text">BRYCHO ADMIN</span></a>
+                </div>
+                <button onclick="logout()" class="btn-secondary">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </header>
+
+        <div class="admin-container">
+            <div class="admin-header">
+                <h1>Admin Panel</h1>
+                <span class="admin-role-badge" id="roleBadge">Admin</span>
+            </div>
+
+            <div class="admin-tabs">
+                <button class="admin-tab active" onclick="switchTab('upload')">
+                    <i class="fas fa-upload"></i> Upload New
+                </button>
+                <button class="admin-tab" onclick="switchTab('queue')" id="queueTab">
+                    <i class="fas fa-clock"></i> Review Queue <span id="queueCount"></span>
+                </button>
+                <button class="admin-tab" onclick="switchTab('manage')">
+                    <i class="fas fa-images"></i> Manage Content
+                </button>
+            </div>
+
+            <div id="uploadContent" class="admin-content active">
+                <div class="upload-form">
+                    <form id="uploadForm" onsubmit="handleUpload(event)">
+                        <div class="form-section">
+                            <h3><i class="fas fa-images"></i> Images</h3>
+                            <div class="image-upload-zone" id="dropZone">
+                                <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                                <h3>Drop images here or click to browse</h3>
+                                <p>Multiple images = one connected group</p>
+                                <input type="file" id="imageInput" multiple accept="image/*" style="display: none;">
+                            </div>
+                            <div id="imagePreviews" class="image-previews"></div>
+                        </div>
+
+                        <div class="form-section">
+                            <h3><i class="fas fa-edit"></i> Details</h3>
+                            <div class="form-group">
+                                <label>Title *</label>
+                                <input type="text" id="title" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Description</label>
+                                <textarea id="description"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Tags (press Enter to add)</label>
+                                <div class="tag-input-container" id="tagContainer">
+                                    <input type="text" id="tagInput" placeholder="Add tags...">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h3><i class="fas fa-link"></i> Source</h3>
+                            <div class="form-group">
+                                <label>Platform</label>
+                                <select id="platform">
+                                    <option value="custom">Original/Custom</option>
+                                    <option value="youtube">YouTube</option>
+                                    <option value="twitch">Twitch</option>
+                                    <option value="reddit">Reddit</option>
+                                    <option value="instagram">Instagram</option>
+                                    <option value="discord">Discord</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Creator Name</label>
+                                <input type="text" id="creator">
+                            </div>
+                            <div class="form-group">
+                                <label>Source Link</label>
+                                <input type="url" id="sourceLink">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="protected">
+                                Protected (password required to view)
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn-primary" style="width: 100%; font-size: 1.125rem; padding: var(--spacing-md);">
+                            <i class="fas fa-check"></i> Submit
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div id="queueContent" class="admin-content">
+                <div class="submission-queue" id="submissionQueue">
+                    <p style="text-align: center; color: var(--color-text-muted);">Loading submissions...</p>
+                </div>
+            </div>
+
+            <div id="manageContent" class="admin-content">
+                <div class="content-filters">
+                    <input type="text" id="searchContent" placeholder="Search content...">
+                    <button class="btn-secondary" onclick="loadAllImages()">
+                        <i class="fas fa-sync"></i> Refresh
+                    </button>
+                </div>
+                <div class="content-grid" id="contentGrid">
+                    <p style="text-align: center; color: var(--color-text-muted);">Loading content...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>
+
+<style>
+.admin-login {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xl);
+}
+
+.login-box {
+    background: var(--color-bg-secondary);
+    border: 2px solid var(--color-wood);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-3xl);
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+}
+
+.login-box h1 {
+    margin-bottom: var(--spacing-xl);
+}
+
+.login-box input {
+    width: 100%;
+    padding: var(--spacing-md);
+    background: var(--color-bg-primary);
+    border: 1px solid var(--color-wood);
+    border-radius: var(--radius-md);
+    color: var(--color-text-primary);
+    font-size: 1rem;
+    margin-bottom: var(--spacing-md);
+}
+
+.login-box button {
+    width: 100%;
+}
+</style>

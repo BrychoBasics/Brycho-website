@@ -1,9 +1,5 @@
-# Short URL redirects for brycho.com
-
-/build           /build-book.html
-/signs           /sign-center.html
-/bookmarks       /build-book.html
-
-# Valheim subfolder redirects (for future organization)
-/valheim/build-book    /build-book.html
-/valheim/signs         /sign-center.html
+# Netlify redirects
+/build    /build-book.html
+/signs    /sign-center.html
+/valheim  /valheim.html
+/admin    /admin.html
