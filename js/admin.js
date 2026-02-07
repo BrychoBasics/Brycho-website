@@ -50,8 +50,8 @@ async function checkAdminPassword() {
 
   if (!isSupabaseConfigured()) {
     // Fallback to simple password check
-    const ADMIN_PASSWORD = "viking"; // CHANGE THIS
-    const CONTRIBUTOR_PASSWORD = "builder123"; // CHANGE THIS
+    const ADMIN_PASSWORD = "brycho3087"; // CHANGE THIS
+    const CONTRIBUTOR_PASSWORD = "tilly3087"; // CHANGE THIS
 
     if (password === ADMIN_PASSWORD) {
       currentUser = { role: "admin", name: "Admin" };
