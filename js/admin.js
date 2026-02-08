@@ -7,10 +7,11 @@ const SUPABASE_URL = "https://iuhtzvblmthenynuojtn.supabase.co"; // https://xxxx
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml1aHR6dmJsbXRoZW55bnVvanRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA0MTAxNDYsImV4cCI6MjA4NTk4NjE0Nn0.8tzqkuh6rCbB_0TLc3K4TITI2IG-MhtUdWpuyATZPKk";
 
 // Initialize Supabase (if configured)
-let supabase = null;
+let supabaseClient = null;
 let currentUser = null;
-let uploadedFiles = [];
 let currentTags = [];
+let fullImage = null;
+let thumbImage = null;
 
 // Check if Supabase is configured
 function isSupabaseConfigured() {
@@ -22,8 +23,8 @@ function isSupabaseConfigured() {
 
 // Initialize
 document.addEventListener("DOMContentLoaded", () => {
-  if (isSupabaseConfigured()) {
-    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  if (isSupabaseConfigured() && window.supabase) {
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   }
 
   setupUploadZone();
@@ -69,7 +70,7 @@ async function checkAdminPassword() {
 
   // Supabase authentication
   try {
-    const { data, error } = await supabase.rpc("verify_password", {
+    const { data, error } = await supabaseClient.rpc("verify_password", {
       input_password: password,
     });
 
@@ -128,6 +129,7 @@ function switchTab(tab) {
   // Load data for the tab
   if (tab === "queue") loadQueue();
   if (tab === "manage") loadAllImages();
+  if (tab === 'tags') loadTagsManager();
 }
 
 // ========================================
@@ -135,56 +137,55 @@ function switchTab(tab) {
 // ========================================
 
 function setupUploadZone() {
-  const dropZone = document.getElementById("dropZone");
-  const fileInput = document.getElementById("imageInput");
-
-  dropZone.addEventListener("click", () => fileInput.click());
-
-  fileInput.addEventListener("change", (e) => {
-    handleFiles(e.target.files);
-  });
-
-  dropZone.addEventListener("dragover", (e) => {
-    e.preventDefault();
-    dropZone.classList.add("dragover");
-  });
-
-  dropZone.addEventListener("dragleave", () => {
-    dropZone.classList.remove("dragover");
-  });
-
-  dropZone.addEventListener("drop", (e) => {
-    e.preventDefault();
-    dropZone.classList.remove("dragover");
-    handleFiles(e.dataTransfer.files);
-  });
+    // Full image zone
+    setupSingleZone('fullDropZone', 'fullImageInput', 'fullPreview', (file) => {
+        fullImage = file;
+    });
+    
+    // Thumbnail zone
+    setupSingleZone('thumbDropZone', 'thumbImageInput', 'thumbPreview', (file) => {
+        thumbImage = file;
+    });
+    loadAvailableTags();
 }
 
-function handleFiles(files) {
-  uploadedFiles = Array.from(files);
-  displayImagePreviews();
+function setupSingleZone(zoneId, inputId, previewId, onFile) {
+    const dropZone = document.getElementById(zoneId);
+    const fileInput = document.getElementById(inputId);
+    const preview = document.getElementById(previewId);
+    
+    dropZone.addEventListener('click', () => fileInput.click());
+    
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files[0]) {
+            onFile(e.target.files[0]);
+            preview.innerHTML = `<div class="image-preview">
+                <img src="${URL.createObjectURL(e.target.files[0])}" alt="Preview">
+            </div>`;
+        }
+    });
+    
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
+    });
+    
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('dragover');
+    });
+    
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        if (e.dataTransfer.files[0]) {
+            onFile(e.dataTransfer.files[0]);
+            fileInput.files = e.dataTransfer.files;
+            preview.innerHTML = `<div class="image-preview">
+                <img src="${URL.createObjectURL(e.dataTransfer.files[0])}" alt="Preview">
+            </div>`;
+        }
+    });
 }
-
-function displayImagePreviews() {
-  const container = document.getElementById("imagePreviews");
-  container.innerHTML = uploadedFiles
-    .map(
-      (file, index) => `
-        <div class="image-preview">
-            <img src="${URL.createObjectURL(file)}" alt="Preview ${index + 1}">
-            <button class="image-preview-remove" onclick="removeImage(${index})" type="button">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-    `,
-    )
-    .join("");
-}
-
-window.removeImage = function (index) {
-  uploadedFiles.splice(index, 1);
-  displayImagePreviews();
-};
 
 // ========================================
 // TAG INPUT
@@ -238,93 +239,91 @@ window.removeTag = function (index) {
 // ========================================
 
 async function handleUpload(event) {
-  event.preventDefault();
-
-  if (uploadedFiles.length === 0) {
-    alert("Please select at least one image");
-    return;
-  }
-
-  const formData = {
-    title: document.getElementById("title").value,
-    description: document.getElementById("description").value,
-    tags: currentTags,
-    source: {
-      platform: document.getElementById("platform").value,
-      creator: document.getElementById("creator").value,
-      link: document.getElementById("sourceLink").value,
-    },
-    protected: document.getElementById("protected").checked,
-    status: currentUser.role === "admin" ? "approved" : "pending",
-    submitted_by: currentUser.name,
-  };
-
-  if (!isSupabaseConfigured()) {
-    // Fallback: Download JSON file
-    downloadAsJSON(formData);
-    return;
-  }
-
-  try {
-    // Upload images to Supabase Storage
-    const imageUrls = [];
-    for (const file of uploadedFiles) {
-      // Get section from form (add this to admin.html first - see below)
-      const section = document.getElementById("section").value; // 'buildbook' or 'signcenter'
-      const isThumbnail = index > 0; // First image = full, rest = thumbnails
-      const folder = isThumbnail ? `${section}-thumb` : `${section}-full`;
-
-      const fileName = `${folder}/${Date.now()}_${file.name}`;
-      const { data, error } = await supabase.storage
-        .from("images")
-        .upload(fileName, file);
-
-      if (error) throw error;
-
-      const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/images/${fileName}`;
-      imageUrls.push(publicUrl);
+    event.preventDefault();
+    
+    if (!fullImage || !thumbImage) {
+        alert('Please select both full-size and thumbnail images');
+        return;
     }
-
-    // Create database entry
-    const imageData = {
-      id: `img_${Date.now()}`,
-      src: imageUrls[0],
-      thumb: imageUrls[0], // TODO: Generate thumbnail
-      title: formData.title,
-      description: formData.description,
-      tags: formData.tags,
-      source_platform: formData.source.platform,
-      source_creator: formData.source.creator,
-      source_link: formData.source.link,
-      protected: formData.protected,
-      additional_images: imageUrls.slice(1),
-      status: formData.status,
-      submitted_by: formData.submitted_by,
+    
+    const formData = {
+        title: document.getElementById('title').value,
+        description: document.getElementById('description').value,
+        tags: currentTags,
+        source: {
+            platform: document.getElementById('platform').value,
+            creator: document.getElementById('creator').value,
+            link: document.getElementById('sourceLink').value
+        },
+        protected: document.getElementById('protected').checked,
+        status: currentUser.role === 'admin' ? 'approved' : 'pending',
+        submitted_by: currentUser.name
     };
-
-    const { error: dbError } = await supabase
-      .from("images")
-      .insert([imageData]);
-
-    if (dbError) throw dbError;
-
-    showToast("Upload successful!", "success");
-    resetForm();
-
-    if (formData.status === "pending") {
-      alert("Your submission has been sent for review. Thank you!");
+    
+    if (!isSupabaseConfigured()) {
+        downloadAsJSON(formData);
+        return;
     }
-  } catch (error) {
-    console.error("Upload error:", error);
-    showToast("Upload failed: " + error.message, "error");
-  }
+    
+    try {
+        const section = document.getElementById('section').value;
+        
+        // Upload full image
+        const fullFileName = `${section}-full/${Date.now()}_${fullImage.name}`;
+        const { error: fullError } = await supabaseClient.storage
+            .from('images')
+            .upload(fullFileName, fullImage);
+        
+        if (fullError) throw fullError;
+        
+        // Upload thumbnail
+        const thumbFileName = `${section}-thumb/${Date.now()}_${thumbImage.name}`;
+        const { error: thumbError } = await supabaseClient.storage
+            .from('images')
+            .upload(thumbFileName, thumbImage);
+        
+        if (thumbError) throw thumbError;
+        
+        // Create database entry
+        const imageData = {
+            id: `img_${Date.now()}`,
+            src: `${SUPABASE_URL}/storage/v1/object/public/images/${fullFileName}`,
+            thumb: `${SUPABASE_URL}/storage/v1/object/public/images/${thumbFileName}`,
+            title: formData.title,
+            description: formData.description,
+            tags: formData.tags,
+            source_platform: formData.source.platform,
+            source_creator: formData.source.creator,
+            source_link: formData.source.link,
+            protected: formData.protected,
+            status: formData.status,
+            submitted_by: formData.submitted_by
+        };
+        
+        const { error: dbError } = await supabaseClient
+            .from('images')
+            .insert([imageData]);
+        
+        if (dbError) throw dbError;
+        
+        showToast('Upload successful!', 'success');
+        resetForm();
+        
+        if (formData.status === 'pending') {
+            alert('Your submission has been sent for review. Thank you!');
+        }
+    } catch (error) {
+        console.error('Upload error:', error);
+        showToast('Upload failed: ' + error.message, 'error');
+    }
 }
 
 function downloadAsJSON(data) {
   const json = JSON.stringify(
     {
       ...data,
-      images: uploadedFiles.map((f) => f.name),
+      fullImage: fullImage?.name,
+      thumbImage: thumbImage?.name,
       id: `img_${Date.now()}`,
       uploadDate: new Date().toISOString().split("T")[0],
     },
@@ -346,11 +345,13 @@ function downloadAsJSON(data) {
 }
 
 function resetForm() {
-  document.getElementById("uploadForm").reset();
-  uploadedFiles = [];
-  currentTags = [];
-  displayImagePreviews();
-  updateTagDisplay();
+    document.getElementById('uploadForm').reset();
+    fullImage = null;
+    thumbImage = null;
+    currentTags = [];
+    document.getElementById('fullPreview').innerHTML = '';
+    document.getElementById('thumbPreview').innerHTML = '';
+    updateTagDisplay();
 }
 
 // ========================================
@@ -366,14 +367,14 @@ async function loadQueue() {
   if (!isSupabaseConfigured()) {
     document.getElementById("submissionQueue").innerHTML = `
             <p style="text-align: center; color: var(--color-text-muted);">
-                Supabase not configured. See SETUP-GUIDE.md for instructions.
+                SupabaseClient not configured. See SETUP-GUIDE.md for instructions.
             </p>
         `;
     return;
   }
 
   try {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from("images")
       .select("*")
       .eq("status", "pending")
@@ -396,14 +397,14 @@ async function loadAllImages() {
   if (!isSupabaseConfigured()) {
     document.getElementById("contentGrid").innerHTML = `
             <p style="text-align: center; color: var(--color-text-muted);">
-                Supabase not configured. See SETUP-GUIDE.md for instructions.
+                SupabaseClient not configured. See SETUP-GUIDE.md for instructions.
             </p>
         `;
     return;
   }
 
   try {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from("images")
       .select("*")
       .eq("status", "approved")
@@ -508,7 +509,7 @@ window.approveSubmission = async function (id) {
   if (!confirm("Approve this submission?")) return;
 
   try {
-    const { error } = await supabase
+    const { error } = await supabaseClient
       .from("images")
       .update({ status: "approved" })
       .eq("id", id);
@@ -529,7 +530,7 @@ window.rejectSubmission = async function (id) {
     return;
 
   try {
-    const { error } = await supabase.from("images").delete().eq("id", id);
+    const { error } = await supabaseClient.from("images").delete().eq("id", id);
 
     if (error) throw error;
 
@@ -545,7 +546,7 @@ window.deleteImage = async function (id) {
   if (!confirm("Delete this image permanently?")) return;
 
   try {
-    const { error } = await supabase.from("images").delete().eq("id", id);
+    const { error } = await supabaseClient.from("images").delete().eq("id", id);
 
     if (error) throw error;
 
@@ -556,6 +557,249 @@ window.deleteImage = async function (id) {
     showToast("Failed to delete", "error");
   }
 };
+
+
+// ========================================
+// TAG MANAGEMENT
+// ========================================
+
+let tagModalMode = null;
+let tagModalData = null;
+
+async function loadTagsManager() {
+    if (!isSupabaseConfigured()) {
+        document.getElementById('categoriesContainer').innerHTML = `
+            <p style="text-align: center; color: var(--color-text-muted);">
+                Supabase not configured. See SETUP-GUIDE.md for instructions.
+            </p>
+        `;
+        return;
+    }
+    
+    const { data: categories } = await supabaseClient
+        .from('tag_categories')
+        .select('*, tags(*)')
+        .order('sort_order');
+    
+    const container = document.getElementById('categoriesContainer');
+    container.innerHTML = categories.map(cat => `
+        <div class="category-card">
+            <div class="category-header">
+                <h3 class="category-title">${cat.name}</h3>
+                <div class="category-actions">
+                    <button class="btn-icon" onclick="editCategory('${cat.id}', '${cat.name}')" title="Edit category">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn-icon" onclick="deleteCategory('${cat.id}')" title="Delete category">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="tag-list">
+                ${cat.tags.sort((a,b) => a.sort_order - b.sort_order).map(tag => `
+                    <div class="tag-chip">
+                        <span class="tag-chip-name">${tag.name}</span>
+                        <div class="tag-chip-actions">
+                            <button class="tag-chip-btn" onclick="editTag('${tag.id}', '${tag.name}', '${tag.category_id}')" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="tag-chip-btn" onclick="deleteTag('${tag.id}')" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+            <button class="btn-secondary" onclick="openAddTagModal('${cat.id}')">
+                <i class="fas fa-plus"></i> Add Tag
+            </button>
+        </div>
+    `).join('');
+}
+
+async function loadAvailableTags() {
+    if (!isSupabaseConfigured()) return;
+    
+    try {
+        const { data: categories } = await supabaseClient
+            .from('tag_categories')
+            .select('*, tags(*)')
+            .order('sort_order');
+        
+        const container = document.getElementById('availableTags');
+        if (!container) return;
+        
+        container.innerHTML = categories.map(cat => `
+            <div class="tag-category-section">
+                <h4>${cat.name}</h4>
+                <div class="tag-options">
+                    ${cat.tags.sort((a,b) => a.sort_order - b.sort_order).map(tag => `
+                        <button type="button" class="tag-option" data-tag="${tag.name}" onclick="toggleTagSelection('${tag.name}')">
+                            ${tag.name}
+                        </button>
+                    `).join('')}
+                </div>
+            </div>
+        `).join('');
+    } catch (error) {
+        console.error('Load tags error:', error);
+    }
+}
+
+function toggleTagSelection(tagName) {
+    const button = document.querySelector(`[data-tag="${tagName}"]`);
+    if (!button) return;
+    
+    button.classList.toggle('selected');
+    
+    if (button.classList.contains('selected')) {
+        if (!currentTags.includes(tagName)) {
+            currentTags.push(tagName);
+            updateTagDisplay();
+        }
+    } else {
+        currentTags = currentTags.filter(t => t !== tagName);
+        updateTagDisplay();
+    }
+}
+
+function openCategoryModal() {
+    tagModalMode = 'add-category';
+    tagModalData = null;
+    document.getElementById('tagModalTitle').textContent = 'Add Category';
+    document.getElementById('tagModalLabel').textContent = 'Category Name';
+    document.getElementById('tagModalInput').value = '';
+    document.getElementById('categorySelectGroup').style.display = 'none';
+    document.getElementById('tagModal').classList.add('active');
+}
+
+function editCategory(id, name) {
+    tagModalMode = 'edit-category';
+    tagModalData = { id, name };
+    document.getElementById('tagModalTitle').textContent = 'Edit Category';
+    document.getElementById('tagModalLabel').textContent = 'Category Name';
+    document.getElementById('tagModalInput').value = name;
+    document.getElementById('categorySelectGroup').style.display = 'none';
+    document.getElementById('tagModal').classList.add('active');
+}
+
+async function openAddTagModal(categoryId) {
+    tagModalMode = 'add-tag';
+    tagModalData = { categoryId };
+    document.getElementById('tagModalTitle').textContent = 'Add Tag';
+    document.getElementById('tagModalLabel').textContent = 'Tag Name';
+    document.getElementById('tagModalInput').value = '';
+    
+    await populateCategorySelect();
+    document.getElementById('tagModalCategory').value = categoryId;
+    document.getElementById('categorySelectGroup').style.display = 'block';
+    document.getElementById('tagModal').classList.add('active');
+}
+
+async function editTag(id, name, categoryId) {
+    tagModalMode = 'edit-tag';
+    tagModalData = { id, name, categoryId };
+    document.getElementById('tagModalTitle').textContent = 'Edit Tag';
+    document.getElementById('tagModalLabel').textContent = 'Tag Name';
+    document.getElementById('tagModalInput').value = name;
+    
+    await populateCategorySelect();
+    document.getElementById('tagModalCategory').value = categoryId;
+    document.getElementById('categorySelectGroup').style.display = 'block';
+    document.getElementById('tagModal').classList.add('active');
+}
+
+async function populateCategorySelect() {
+    const { data: categories } = await supabaseClient
+        .from('tag_categories')
+        .select('*')
+        .order('sort_order');
+    
+    const select = document.getElementById('tagModalCategory');
+    select.innerHTML = categories.map(cat => 
+        `<option value="${cat.id}">${cat.name}</option>`
+    ).join('');
+}
+
+function closeTagModal() {
+    document.getElementById('tagModal').classList.remove('active');
+}
+
+async function saveTagModal() {
+    const value = document.getElementById('tagModalInput').value.trim();
+    if (!value) {
+        alert('Please enter a name');
+        return;
+    }
+    
+    try {
+        if (tagModalMode === 'add-category') {
+            const id = value.toLowerCase().replace(/\s+/g, '-');
+            await supabaseClient.from('tag_categories').insert([
+                { id, name: value, sort_order: 999 }
+            ]);
+        }
+        else if (tagModalMode === 'edit-category') {
+            await supabaseClient.from('tag_categories')
+                .update({ name: value })
+                .eq('id', tagModalData.id);
+        }
+        else if (tagModalMode === 'add-tag') {
+            const categoryId = document.getElementById('tagModalCategory').value;
+            const id = value.toLowerCase().replace(/\s+/g, '-');
+            await supabaseClient.from('tags').insert([
+                { id, name: value, category_id: categoryId, sort_order: 999 }
+            ]);
+        }
+        else if (tagModalMode === 'edit-tag') {
+            const categoryId = document.getElementById('tagModalCategory').value;
+            await supabaseClient.from('tags')
+                .update({ name: value, category_id: categoryId })
+                .eq('id', tagModalData.id);
+        }
+        
+        closeTagModal();
+        loadTagsManager();
+        loadAvailableTags(); // Refresh upload form tags
+        showToast('Saved successfully', 'success');
+    } catch (error) {
+        console.error('Save error:', error);
+        showToast('Failed to save: ' + error.message, 'error');
+    }
+}
+
+async function deleteCategory(id) {
+    if (!confirm('Delete this category? All tags in it will also be deleted.')) return;
+    
+    try {
+        await supabaseClient.from('tag_categories').delete().eq('id', id);
+        loadTagsManager();
+        showToast('Category deleted', 'success');
+    } catch (error) {
+        console.error('Delete error:', error);
+        showToast('Failed to delete', 'error');
+    }
+}
+
+async function deleteTag(id) {
+    if (!confirm('Delete this tag?')) return;
+    
+    try {
+        await supabaseClient.from('tags').delete().eq('id', id);
+        loadTagsManager();
+        loadAvailableTags();
+        showToast('Tag deleted', 'success');
+    } catch (error) {
+        console.error('Delete error:', error);
+        showToast('Failed to delete', 'error');
+    }
+}
+
+// Update switchTab function to load tags when switching to tags tab
+// Find the existing switchTab function and add:
+if (tab === 'tags') loadTagsManager();
+
+
 
 // ========================================
 // UTILITIES
