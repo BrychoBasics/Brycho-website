@@ -1,5 +1,4 @@
 # Netlify redirects
 /build    /build-book.html
 /signs    /sign-center.html
-/valheim  /valheim.html
-/admin    /admin.html
+#/valheim  /valheim.html
