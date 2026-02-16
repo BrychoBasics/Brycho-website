@@ -10,8 +10,6 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 let supabaseClient = null;
 let currentUser = null;
 let currentTags = [];
-let fullImage = null;
-let thumbImage = null;
 
 // Check if Supabase is configured
 function isSupabaseConfigured() {
@@ -29,6 +27,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   setupUploadZone();
   setupTagInput();
+
+  const passwordInput = document.getElementById("adminPassword");
+  if (passwordInput) {
+    passwordInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+        checkAdminPassword();
+      }
+    });
+  }
 
   // Check for existing session
   const savedUser = sessionStorage.getItem("admin_user");
@@ -48,40 +55,27 @@ async function checkAdminPassword() {
 
   if (!password) return;
 
-  if (!isSupabaseConfigured()) {
-    // Fallback to simple password check
-    const ADMIN_PASSWORD = "brycho3087"; // CHANGE THIS
-    const CONTRIBUTOR_PASSWORD = "tilly3087"; // CHANGE THIS
-
-    if (password === ADMIN_PASSWORD) {
-      currentUser = { role: "admin", name: "Admin" };
-      sessionStorage.setItem("admin_user", JSON.stringify(currentUser));
-      showAdminPanel();
-    } else if (password === CONTRIBUTOR_PASSWORD) {
-      currentUser = { role: "contributor", name: "Contributor" };
-      sessionStorage.setItem("admin_user", JSON.stringify(currentUser));
-      showAdminPanel();
-    } else {
-      errorMsg.style.display = "block";
-      setTimeout(() => (errorMsg.style.display = "none"), 3000);
-    }
-    return;
-  }
-
-  // Supabase authentication
   try {
-    const { data, error } = await supabaseClient.rpc("verify_password", {
-      input_password: password,
+    const response = await fetch(`${SUPABASE_URL}/functions/v1/verify-login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+      },
+      body: JSON.stringify({ password })
     });
 
-    if (error || !data || data.length === 0) {
+    const data = await response.json();
+
+    if (!response.ok || data.error) {
       errorMsg.style.display = "block";
       setTimeout(() => (errorMsg.style.display = "none"), 3000);
       return;
     }
 
-    currentUser = data[0];
+    currentUser = data.user;
     sessionStorage.setItem("admin_user", JSON.stringify(currentUser));
+    sessionStorage.setItem("admin_password", password); // Store for Edge Function calls
     showAdminPanel();
   } catch (error) {
     console.error("Auth error:", error);
@@ -92,15 +86,24 @@ async function checkAdminPassword() {
 function showAdminPanel() {
   document.getElementById("loginScreen").style.display = "none";
   document.getElementById("adminPanel").style.display = "block";
-  document.getElementById("roleBadge").textContent =
-    currentUser.role.toUpperCase();
+  document.getElementById("roleBadge").textContent = currentUser.role.toUpperCase();
+  const roleDisplay = currentUser.role === 'admin' ? 'Admin' : 'Contributor';
+document.getElementById("userName").textContent = `${currentUser.name} (${roleDisplay})`;
 
   // Hide admin-only tabs for contributors
   if (currentUser.role === "contributor") {
     document.getElementById("queueTab").style.display = "none";
+    document.querySelector('.admin-tab[onclick*="manage"]').style.display = "none";
+    document.querySelector('.admin-tab[onclick*="tags"]').style.display = "none";
   }
 
   loadData();
+
+  // Hide protected checkbox for contributors
+if (currentUser.role === "contributor") {
+  const protectedGroup = document.getElementById('protectedGroup');
+  if (protectedGroup) protectedGroup.style.display = 'none';
+}
 }
 
 function logout() {
@@ -136,33 +139,17 @@ function switchTab(tab) {
 // IMAGE UPLOAD
 // ========================================
 
-function setupUploadZone() {
-    // Full image zone
-    setupSingleZone('fullDropZone', 'fullImageInput', 'fullPreview', (file) => {
-        fullImage = file;
-    });
-    
-    // Thumbnail zone
-    setupSingleZone('thumbDropZone', 'thumbImageInput', 'thumbPreview', (file) => {
-        thumbImage = file;
-    });
-    loadAvailableTags();
-}
+let uploadedImages = [];
 
-function setupSingleZone(zoneId, inputId, previewId, onFile) {
-    const dropZone = document.getElementById(zoneId);
-    const fileInput = document.getElementById(inputId);
-    const preview = document.getElementById(previewId);
+function setupUploadZone() {
+    const dropZone = document.getElementById('multiDropZone');
+    const fileInput = document.getElementById('multiImageInput');
+    const preview = document.getElementById('multiPreviews');
     
     dropZone.addEventListener('click', () => fileInput.click());
     
     fileInput.addEventListener('change', (e) => {
-        if (e.target.files[0]) {
-            onFile(e.target.files[0]);
-            preview.innerHTML = `<div class="image-preview">
-                <img src="${URL.createObjectURL(e.target.files[0])}" alt="Preview">
-            </div>`;
-        }
+        handleMultipleFiles(Array.from(e.target.files));
     });
     
     dropZone.addEventListener('dragover', (e) => {
@@ -177,15 +164,79 @@ function setupSingleZone(zoneId, inputId, previewId, onFile) {
     dropZone.addEventListener('drop', (e) => {
         e.preventDefault();
         dropZone.classList.remove('dragover');
-        if (e.dataTransfer.files[0]) {
-            onFile(e.dataTransfer.files[0]);
-            fileInput.files = e.dataTransfer.files;
-            preview.innerHTML = `<div class="image-preview">
-                <img src="${URL.createObjectURL(e.dataTransfer.files[0])}" alt="Preview">
-            </div>`;
-        }
+        handleMultipleFiles(Array.from(e.dataTransfer.files));
     });
+    
+    // Build selector
+    const buildSelect = document.getElementById('buildSelect');
+    const newBuildInput = document.getElementById('newBuildName');
+    
+    if (buildSelect && newBuildInput) {
+        buildSelect.addEventListener('change', () => {
+            newBuildInput.style.display = buildSelect.value === '__new__' ? 'block' : 'none';
+        });
+    }
+    
+    loadBuilds();
+    loadAvailableTags();
 }
+
+function handleMultipleFiles(files) {
+    if (files.length > 10) {
+        alert('Maximum 10 images per idea');
+        return;
+    }
+    
+    uploadedImages = files.slice(0, 10);
+    displayMultiPreviews();
+}
+
+function displayMultiPreviews() {
+    const container = document.getElementById('multiPreviews');
+    container.innerHTML = uploadedImages.map((file, index) => `
+        <div class="image-preview">
+            <img src="${URL.createObjectURL(file)}" alt="Preview ${index + 1}">
+            <button class="image-preview-remove" onclick="removeUploadedImage(${index})" type="button">
+                <i class="fas fa-times"></i>
+            </button>
+            ${index === 0 ? '<span class="primary-badge">Main</span>' : ''}
+        </div>
+    `).join('');
+}
+
+window.removeUploadedImage = function(index) {
+    uploadedImages.splice(index, 1);
+    displayMultiPreviews();
+};
+
+async function loadBuilds() {
+    if (!isSupabaseConfigured()) return;
+    
+    try {
+        const { data, error } = await supabaseClient
+            .from('builds')
+            .select('*')
+            .order('created_at', { ascending: false });
+        
+        if (error) throw error;
+        
+        const select = document.getElementById('buildSelect');
+        if (select) {
+            const options = data.map(build => 
+                `<option value="${build.id}">${build.name}</option>`
+            ).join('');
+            
+            select.innerHTML = `
+                <option value="">No build grouping</option>
+                <option value="__new__">+ Create new build</option>
+                ${options}
+            `;
+        }
+    } catch (error) {
+        console.error('Load builds error:', error);
+    }
+}
+
 
 // ========================================
 // TAG INPUT
@@ -241,81 +292,133 @@ window.removeTag = function (index) {
 async function handleUpload(event) {
     event.preventDefault();
     
-    if (!fullImage || !thumbImage) {
-        alert('Please select both full-size and thumbnail images');
-        return;
-    }
-    
-    const formData = {
-        title: document.getElementById('title').value,
-        description: document.getElementById('description').value,
-        tags: currentTags,
-        source: {
-            platform: document.getElementById('platform').value,
-            creator: document.getElementById('creator').value,
-            link: document.getElementById('sourceLink').value
-        },
-        protected: document.getElementById('protected').checked,
-        status: currentUser.role === 'admin' ? 'approved' : 'pending',
-        submitted_by: currentUser.name
-    };
-    
-    if (!isSupabaseConfigured()) {
-        downloadAsJSON(formData);
+    if (uploadedImages.length === 0) {
+        alert('Please select at least one image');
         return;
     }
     
     try {
-        const section = document.getElementById('section').value;
+        const password = sessionStorage.getItem('admin_password');
         
-        // Upload full image
-        const fullFileName = `${section}-full/${Date.now()}_${fullImage.name}`;
-        const { error: fullError } = await supabaseClient.storage
-            .from('images')
-            .upload(fullFileName, fullImage);
+        // Get build info
+        const buildSelect = document.getElementById('buildSelect');
+        const buildId = buildSelect.value === '__new__' ? null : (buildSelect.value || null);
+        const buildName = buildSelect.value === '__new__' ? document.getElementById('newBuildName').value : null;
         
-        if (fullError) throw fullError;
+        if (buildSelect.value === '__new__' && !buildName) {
+            alert('Please enter a build name');
+            return;
+        }
         
-        // Upload thumbnail
-        const thumbFileName = `${section}-thumb/${Date.now()}_${thumbImage.name}`;
-        const { error: thumbError } = await supabaseClient.storage
-            .from('images')
-            .upload(thumbFileName, thumbImage);
+        // Upload all images and generate thumbnails
+        const imageUrls = [];
+        const thumbnailUrls = [];
         
-        if (thumbError) throw thumbError;
+        for (let i = 0; i < uploadedImages.length; i++) {
+            const file = uploadedImages[i];
+            
+            // Upload full image
+            const fullFileName = `buildbook-full/${Date.now()}_${i}_${file.name}`;
+            const { error: fullError } = await supabaseClient.storage
+                .from('Images')
+                .upload(fullFileName, file);
+            
+            if (fullError) throw fullError;
+            
+            imageUrls.push(`${SUPABASE_URL}/storage/v1/object/public/Images/${fullFileName}`);
+            
+            // Generate and upload thumbnail
+            const thumbnail = await generateThumbnail(file);
+            const thumbFileName = `buildbook-thumb/${Date.now()}_${i}_${file.name}`;
+            const { error: thumbError } = await supabaseClient.storage
+                .from('Images')
+                .upload(thumbFileName, thumbnail);
+            
+            if (thumbError) throw thumbError;
+            
+            thumbnailUrls.push(`${SUPABASE_URL}/storage/v1/object/public/Images/${thumbFileName}`);
+        }
         
         // Create database entry
         const imageData = {
             id: `img_${Date.now()}`,
-            src: `${SUPABASE_URL}/storage/v1/object/public/images/${fullFileName}`,
-            thumb: `${SUPABASE_URL}/storage/v1/object/public/images/${thumbFileName}`,
-            title: formData.title,
-            description: formData.description,
-            tags: formData.tags,
-            source_platform: formData.source.platform,
-            source_creator: formData.source.creator,
-            source_link: formData.source.link,
-            protected: formData.protected,
-            status: formData.status,
-            submitted_by: formData.submitted_by
+            src: imageUrls[0],
+            thumb: thumbnailUrls[0],
+            image_urls: imageUrls,
+            thumbnail_urls: thumbnailUrls,
+            title: document.getElementById('title').value,
+            description: document.getElementById('description').value,
+            upload_notes: document.getElementById('uploadNotes')?.value || null,
+            tags: currentTags,
+            source_platform: document.getElementById('platform').value,
+            source_creator: document.getElementById('creator').value,
+            source_link: document.getElementById('sourceLink').value,
+            protected: document.getElementById('protected')?.checked || false,
+            build_id: buildId
         };
         
-        const { error: dbError } = await supabaseClient
-            .from('images')
-            .insert([imageData]);
+        const response = await fetch(`${SUPABASE_URL}/functions/v1/admin-upload`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+            },
+            body: JSON.stringify({ password, imageData, buildName })
+        });
         
-        if (dbError) throw dbError;
+        const result = await response.json();
+        
+        if (!response.ok || result.error) {
+            throw new Error(result.error || 'Upload failed');
+        }
         
         showToast('Upload successful!', 'success');
         resetForm();
+        loadBuilds();
         
-        if (formData.status === 'pending') {
+        if (currentUser.role === 'contributor') {
             alert('Your submission has been sent for review. Thank you!');
         }
     } catch (error) {
         console.error('Upload error:', error);
         showToast('Upload failed: ' + error.message, 'error');
     }
+}
+
+// Thumbnail generation
+async function generateThumbnail(file, maxWidth = 400, maxHeight = 300) {
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+                
+                if (width > height) {
+                    if (width > maxWidth) {
+                        height *= maxWidth / width;
+                        width = maxWidth;
+                    }
+                } else {
+                    if (height > maxHeight) {
+                        width *= maxHeight / height;
+                        height = maxHeight;
+                    }
+                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                canvas.toBlob(resolve, 'image/jpeg', 0.8);
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
 }
 
 function downloadAsJSON(data) {
@@ -346,11 +449,9 @@ function downloadAsJSON(data) {
 
 function resetForm() {
     document.getElementById('uploadForm').reset();
-    fullImage = null;
-    thumbImage = null;
+    uploadedImages = [];
     currentTags = [];
-    document.getElementById('fullPreview').innerHTML = '';
-    document.getElementById('thumbPreview').innerHTML = '';
+    document.getElementById('multiPreviews').innerHTML = '';
     updateTagDisplay();
 }
 
@@ -407,7 +508,7 @@ async function loadAllImages() {
     const { data, error } = await supabaseClient
       .from("images")
       .select("*")
-      .eq("status", "approved")
+      .in("status", ["published", "published-protected"])
       .order("upload_date", { ascending: false });
 
     if (error) throw error;
@@ -509,12 +610,22 @@ window.approveSubmission = async function (id) {
   if (!confirm("Approve this submission?")) return;
 
   try {
-    const { error } = await supabaseClient
-      .from("images")
-      .update({ status: "approved" })
-      .eq("id", id);
+    const password = sessionStorage.getItem('admin_password');
+    
+    const response = await fetch(`${SUPABASE_URL}/functions/v1/admin-approve`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+      },
+      body: JSON.stringify({ password, imageId: id })
+    });
 
-    if (error) throw error;
+    const result = await response.json();
+
+    if (!response.ok || result.error) {
+      throw new Error(result.error || 'Failed to approve');
+    }
 
     showToast("Submission approved!", "success");
     loadQueue();
@@ -530,9 +641,22 @@ window.rejectSubmission = async function (id) {
     return;
 
   try {
-    const { error } = await supabaseClient.from("images").delete().eq("id", id);
+    const password = sessionStorage.getItem('admin_password');
+    
+    const response = await fetch(`${SUPABASE_URL}/functions/v1/admin-delete`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+      },
+      body: JSON.stringify({ password, imageId: id })
+    });
 
-    if (error) throw error;
+    const result = await response.json();
+
+    if (!response.ok || result.error) {
+      throw new Error(result.error || 'Failed to reject');
+    }
 
     showToast("Submission rejected", "success");
     loadQueue();
@@ -546,9 +670,22 @@ window.deleteImage = async function (id) {
   if (!confirm("Delete this image permanently?")) return;
 
   try {
-    const { error } = await supabaseClient.from("images").delete().eq("id", id);
+    const password = sessionStorage.getItem('admin_password');
+    
+    const response = await fetch(`${SUPABASE_URL}/functions/v1/admin-delete`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+      },
+      body: JSON.stringify({ password, imageId: id })
+    });
 
-    if (error) throw error;
+    const result = await response.json();
+
+    if (!response.ok || result.error) {
+      throw new Error(result.error || 'Failed to delete');
+    }
 
     showToast("Image deleted", "success");
     loadAllImages();
@@ -794,11 +931,6 @@ async function deleteTag(id) {
         showToast('Failed to delete', 'error');
     }
 }
-
-// Update switchTab function to load tags when switching to tags tab
-// Find the existing switchTab function and add:
-if (tab === 'tags') loadTagsManager();
-
 
 
 // ========================================

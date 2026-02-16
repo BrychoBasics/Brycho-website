@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Brycho's Build Book - Valheim Building Inspiration | Brycho</title>
     <meta name="description" content="Brycho's collection of techniques and inspirations for usage in building.">
@@ -17,31 +19,40 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Styles -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/build-book.css">
+    <link rel="stylesheet" href="css/admin.css">
 </head>
 <body>
     <!-- Header Navigation -->
     <header class="site-header">
-        <div class="header-content">
-            <button class="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-            
-            <div class="logo">
-                <a href="index.html">
-                    <img src="images/Wordmark_small.png" alt="Brycho" style="height: 30px;">
-                </a>
-            </div>
-            
-            <nav class="main-nav">
-                <a href="index.html">Home</a>
-                <a href="valheim.html" class="active">Valheim</a>
-            </nav>
+    <div class="header-content">
+        <button class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        
+        <div class="logo">
+            <a href="index.html">
+                <img src="images/Wordmark_small.png" alt="Brycho" style="height: 30px;">
+            </a>
         </div>
-    </header>
+        
+        <nav class="main-nav">
+            <a href="index.html">Home</a>
+            <a href="valheim.html" class="active">Valheim</a>
+        </nav>
+        
+        <div class="header-admin" id="headerAdmin" style="display: none;">
+            <span class="user-info">Logged in as <span id="headerUserName"></span></span>
+            <button onclick="logout()" class="btn-logout">
+                <i class="fas fa-sign-out-alt"></i>
+            </button>
+        </div>
+    </div>
+</header>
     
     <!-- Mobile Menu -->
     <div class="mobile-menu">
@@ -103,35 +114,26 @@
                         <i class="fas fa-times"></i> Clear
                     </button>
                 </div>
+
+                <div class="filter-group" id="uploadBtnGroup" style="display: none;">
+                    <button id="uploadBtn" class="btn-primary">
+                     <i class="fas fa-plus"></i> Upload
+                    </button>
+                </div>
+
+                <div class="filter-group" id="tagsBtnGroup" style="display: none;">
+    <button id="tagsBtn" class="btn-secondary">
+        <i class="fas fa-tags"></i> Manage Tags
+    </button>
+</div>
+
             </div>
 
-            <!-- Tag Filter Panel (Hidden by default) -->
-            <div id="tagFilterPanel" class="tag-filter-panel" style="display: none;">
-                <div class="filter-category">
-                    <h3>Application</h3>
-                    <div class="tag-group" id="buildingTypeTags"></div>
-                </div>
-                <div class="filter-category">
-                    <h3>Component</h3>
-                    <div class="tag-group" id="techniqueTags"></div>
-                </div>
-                <div class="filter-category">
-                    <h3>Materials</h3>
-                    <div class="tag-group" id="styleTags"></div>
-                </div>
-                <div class="filter-category">
-                    <h3>Mod Requirements</h3>
-                    <div class="tag-group" id="difficultyTags"></div>
-                </div>
-                <div class="filter-category">
-                    <h3>Miscellaneous Filters</h3>
-                    <div class="tag-group" id="sourceTags"></div>
-                </div>
-            </div>
+            <!-- Tag Filter Panel (Dynamically loaded) -->
+<div id="tagFilterPanel" class="tag-filter-panel" style="display: none;">
+    <!-- Categories will be loaded dynamically -->
+</div>
 
-            <!-- Active Filters Display -->
-            <div id="activeFiltersList" class="active-filters-list"></div>
-            
             <!-- Results Counter -->
             <div class="results-counter">Loading...</div>
         </div>
@@ -157,7 +159,7 @@
 
             <div id="loadingSpinner" class="loading-spinner">
                 <i class="fas fa-hammer fa-spin"></i>
-                <p>Loading techniques...</p>
+                <p>Loading Ideas...</p>
             </div>
         </div>
     </section>
@@ -193,7 +195,7 @@
                     </button>
                     
                     <div class="related-section">
-                        <h3>Related Techniques</h3>
+                        <h3>Other ideas from this build</h3>
                         <div id="lightboxRelated" class="related-grid">
                             <!-- Related items will appear here -->
                         </div>
@@ -269,27 +271,202 @@
         </div>
     </div>
 
-    <!-- Password Prompt -->
-    <div id="passwordPrompt" class="password-prompt hidden">
-        <div class="password-header">
-            <h3><i class="fas fa-lock"></i> Protected Content</h3>
-            <button id="passwordClose" class="password-close">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <div class="password-content">
-            <label for="passwordInput">Enter password to view protected images:</label>
-            <input type="password" id="passwordInput" placeholder="Password">
-            <button id="passwordSubmit" class="btn-primary">
-                <i class="fas fa-unlock"></i> Unlock
-            </button>
-        </div>
+    <!-- Admin Login Prompt -->
+<div id="passwordPrompt" class="password-prompt hidden">
+    <div class="password-header">
+        <h3><i class="fas fa-user-shield"></i> Admin Login</h3>
+        <button id="passwordClose" class="password-close">
+            <i class="fas fa-times"></i>
+        </button>
     </div>
+    <div class="password-content">
+        <label for="passwordInput">Enter admin or contributor password:</label>
+        <input type="password" id="passwordInput" placeholder="Password">
+        <button id="passwordSubmit" class="btn-primary">
+            <i class="fas fa-sign-in-alt"></i> Login
+        </button>
+    </div>
+</div>
 
     <!-- Scripts -->
     <script src="js/navigation.js"></script>
     <script src="js/bookmarks.js"></script>
     <script src="js/build-book.js"></script>
     <!-- <script src="js/site-password.js"></script> --> <!-- Uncomment to enable site protection -->
+
+<!-- Upload Modal -->
+<div id="uploadModal" class="modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content" style="max-width: 700px; max-height: 90vh; overflow-y: auto;">
+        <div class="modal-header">
+            <h2><i class="fas fa-upload"></i> Upload New Idea</h2>
+            <button class="modal-close" onclick="closeUploadModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form id="uploadFormBuildBook" onsubmit="handleBuildBookUpload(event)">
+                
+                <div class="form-group">
+                    <label>Idea Title</label>
+                    <input type="text" id="uploadTitle" required maxlength="100">
+                    <div class="title-helper">
+                        <span id="titleCharCount">0/100</span>
+                        <span id="titleWarning" style="display: none; color: var(--color-warning); font-size: 0.875rem;">
+                            💡 Tip: Keep titles concise (1-2 lines). If your idea has many elements, consider splitting into multiple ideas!
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Images</label>
+                    <div class="image-upload-zone required-empty" id="uploadDropZone">
+                        <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                        <h4>Drop images here or click to browse</h4>
+                        <p>(5MB max file size)</p>
+                        <input type="file" id="uploadImageInput" multiple accept="image/*" style="display: none;">
+                    </div>
+                    <div id="uploadPreviews" class="image-previews"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Description (optional)</label>
+                    <textarea id="uploadDescription"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Build (optional)</label>
+                    <select id="uploadBuildSelect">
+                        <option value="">None</option>
+                        <option value="__new__">+ Create new build</option>
+                    </select>
+                    <input type="text" id="uploadNewBuildName" placeholder="New build name" style="display: none; margin-top: 8px;">
+                </div>
+                
+                <div class="form-group">
+                    <label>Tags (select all applicable)</label>
+                    <div id="uploadAvailableTags" class="available-tags"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Who should be credited with this idea?</label>
+                    <div class="source-toggle">
+                        <button type="button" class="source-toggle-btn active" data-source="mine" onclick="toggleSourceType('mine')">
+                            Me
+                        </button>
+                        <button type="button" class="source-toggle-btn" data-source="found" onclick="toggleSourceType('found')">
+                            Someone else
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group" id="uploadCreatorGroup">
+                    <label style="display: flex; align-items: center; gap: 8px;">Creator's Name
+                        <button type="button" class="info-btn-small" onclick="showCreatorInfo()" title="Creator's name requirements">
+                            <i class="fas fa-info"></i>
+                        </button>
+                    </label>
+                    <input type="text" id="uploadCreator" list="creatorList" autocomplete="off" required>
+                    <datalist id="creatorList"></datalist>
+                </div>
+
+                <div class="form-group" id="uploadLinkGroup">
+                    <label style="display: flex; align-items: center; gap: 8px;">
+                        Source Link
+                        <button type="button" class="info-btn-small" onclick="showLinkInfo()" title="Link requirements">
+                            <i class="fas fa-info"></i>
+                        </button>
+                    </label>
+                    <input type="url" id="uploadSourceLink">
+                </div>
+                
+                <div class="form-group">
+                    <label>Upload Notes (optional)</label>
+                    <textarea id="uploadNotes" placeholder="Notes for admin review (tag suggestions, etc.)"></textarea>
+                </div>
+                
+                <div class="form-group" id="uploadProtectedGroup">
+                    <label>
+                        <input type="checkbox" id="uploadProtected">
+                        Protected (only visible when logged in)
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-primary" style="width: 100%; font-size: 1.125rem; padding: var(--spacing-md);">
+                    <i class="fas fa-check"></i> Submit for review
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Tags Management Modal -->
+<div id="tagsModal" class="modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
+        <div class="modal-header">
+            <h2><i class="fas fa-tags"></i> Manage Tags</h2>
+            <button class="modal-close" onclick="closeTagsModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="tags-manager">
+                <div class="tags-header">
+                    <button class="btn-primary" onclick="openCategoryModal()">
+                        <i class="fas fa-plus"></i> Add Category
+                    </button>
+                </div>
+
+                <div id="categoriesContainer" class="categories-container">
+                    <!-- Categories load here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tag Edit Modal -->
+<div id="tagEditModal" class="modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-header">
+            <h2 id="tagModalTitle">Manage Tags</h2>
+            <button class="modal-close" onclick="closeTagEditModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label id="tagModalLabel">Name</label>
+                <input type="text" id="tagModalInput">
+            </div>
+            <div class="form-group" id="categorySelectGroup" style="display:none;">
+                <label>Category</label>
+                <select id="tagModalCategory"></select>
+            </div>
+            <button class="btn-primary" onclick="saveTagModal()" style="width:100%;">
+                Save
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" class="toast"></div>
+
+
+<!-- Toast Notification -->
+<div id="toast" class="toast"></div>
+
+
+
+    <!-- Toast Notification -->
+<div id="toast" class="toast"></div>
+
+<!-- Scripts -->
+<script src="js/navigation.js"></script>
+
+
 </body>
 </html>

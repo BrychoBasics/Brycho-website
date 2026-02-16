@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - Brycho</title>
 
@@ -32,15 +33,21 @@
 
     <div id="adminPanel" style="display: none;">
         <header class="site-header">
-            <div class="header-content">
-                <div class="logo">
-                    <a href="index.html"><span class="logo-text">BRYCHO ADMIN</span></a>
-                </div>
-                <button onclick="logout()" class="btn-secondary">
-                    <i class="fas fa-sign-out-alt"></i> LogoutLogoutLogoutLogoutLogoutLogoutLogoutLogoutLogout
-                </button>
-            </div>
-        </header>
+    <div class="header-content">
+        <div class="logo">
+            <a href="index.html">
+                <img src="images/Wordmark_small.png" alt="BrychoBasics" style="height: 40px;">
+            </a>
+        </div>
+        
+        <div class="header-right">
+            <span class="user-info">Logged in as <span id="userName"></span></span>
+            <button onclick="logout()" class="btn-logout">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+    </div>
+</header>
 
         <div class="admin-container">
             <div class="admin-header">
@@ -50,7 +57,7 @@
 
             <div class="admin-tabs">
                 <button class="admin-tab active" onclick="switchTab('upload')">
-                    <i class="fas fa-upload"></i> Upload New
+                    <i class="fas fa-upload"></i> Upload New Idea
                 </button>
                 <button class="admin-tab" onclick="switchTab('queue')" id="queueTab">
                     <i class="fas fa-clock"></i> Review Queue <span id="queueCount"></span>
@@ -62,101 +69,90 @@
                     <i class="fas fa-tags"></i> Manage Tags
                 </button>
             </div>
-
-            <div id="uploadContent" class="admin-content active">
-                <div class="upload-form">
-                    <form id="uploadForm" onsubmit="handleUpload(event)">
-                        <div class="form-section">
-                            <h3><i class="fas fa-images"></i> Images</h3>
-
-                            <div class="form-group">
-                                <label>Section *</label>
-                                <select id="section" required>
-                                    <option value="buildbook">Build Book</option>
-                                    <option value="signcenter">Sign Center</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label>Full Size Image *</label>
-                                <div class="image-upload-zone" id="fullDropZone">
-                                    <i class="fas fa-cloud-upload-alt upload-icon"></i>
-                                    <h4>Drop full-size image here</h4>
-                                    <input type="file" id="fullImageInput" accept="image/*" style="display: none;">
-                                </div>
-                                <div id="fullPreview" class="image-previews"></div>
-                            </div>
-
-                            <div class="form-group">
-                                <label>Thumbnail Image *</label>
-                                <div class="image-upload-zone" id="thumbDropZone">
-                                    <i class="fas fa-cloud-upload-alt upload-icon"></i>
-                                    <h4>Drop thumbnail here</h4>
-                                    <input type="file" id="thumbImageInput" accept="image/*" style="display: none;">
-                                </div>
-                                <div id="thumbPreview" class="image-previews"></div>
-                            </div>
-                        </div>
-
-
-                        <div class="form-section">
-                            <h3><i class="fas fa-edit"></i> Details</h3>
-                            <div class="form-group">
-                                <label>Title *</label>
-                                <input type="text" id="title" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Description</label>
-                                <textarea id="description"></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label>Tags</label>
-                                <div id="availableTags" class="available-tags"></div>
-                                <div class="tag-input-container" id="tagContainer">
-                                    <input type="text" id="tagInput" placeholder="Or type new tag...">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-section">
-                            <h3><i class="fas fa-link"></i> Source</h3>
-                            <div class="form-group">
-                                <label>Platform</label>
-                                <select id="platform">
-                                    <option value="original">Original</option>
-                                    <option value="youtube">YouTube</option>
-                                    <option value="twitch">Twitch</option>
-                                    <option value="twitter">Twitter</option>
-                                    <option value="reddit">Reddit</option>
-                                    <option value="instagram">Instagram</option>
-                                    <option value="discord">Discord</option>
-                                    <option value="custom">Custom</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Creator Name</label>
-                                <input type="text" id="creator">
-                            </div>
-                            <div class="form-group">
-                                <label>Source Link</label>
-                                <input type="url" id="sourceLink">
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label>
-                                <input type="checkbox" id="protected">
-                                Protected (password required to view)
-                            </label>
-                        </div>
-
-                        <button type="submit" class="btn-primary"
-                            style="width: 100%; font-size: 1.125rem; padding: var(--spacing-md);">
-                            <i class="fas fa-check"></i> Submit
-                        </button>
-                    </form>
+<div id="uploadContent" class="admin-content active">
+    <div class="upload-form">
+        <form id="uploadForm" onsubmit="handleUpload(event)">
+            
+            <div class="form-group">
+                <label>Idea Title *</label>
+                <input type="text" id="title" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Images *</label>
+                <div class="image-upload-zone" id="multiDropZone">
+                    <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                    <h4>Drop images here or click to browse</h4>
+                    <p>Upload 1-10 images of this idea</p>
+                    <input type="file" id="multiImageInput" multiple accept="image/*" style="display: none;">
+                </div>
+                <div id="multiPreviews" class="image-previews"></div>
+            </div>
+            
+            <div class="form-group">
+                <label>Description (optional)</label>
+                <textarea id="description"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>Build (optional)</label>
+                <select id="buildSelect">
+                    <option value="">None</option>
+                    <option value="__new__">+ Create new build</option>
+                </select>
+                <input type="text" id="newBuildName" placeholder="New build name" style="display: none; margin-top: 8px;">
+            </div>
+            
+            <div class="form-group">
+                <label>Tags *</label>
+                <div id="availableTags" class="available-tags"></div>
+                <div class="tag-input-container" id="tagContainer">
+                    <input type="text" id="tagInput" placeholder="Or type new tag...">
                 </div>
             </div>
+            
+            <div class="form-group">
+                <label>Source *</label>
+                <select id="platform">
+                    <option value="original">Original Idea</option>
+                    <option value="youtube">YouTube</option>
+                    <option value="twitch">Twitch</option>
+                    <option value="twitter">Twitter</option>
+                    <option value="reddit">Reddit</option>
+                    <option value="instagram">Instagram</option>
+                    <option value="discord">Discord</option>
+                    <option value="custom">Other (explain in upload notes below)</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Creator's Name</label>
+                <input type="text" placeholder="test" id="creator">
+            </div>
+            
+            <div class="form-group">
+                <label>Source Link</label>
+                <input type="url" id="sourceLink">
+            </div>
+            
+            <div class="form-group">
+                <label>Upload Notes</label>
+                <textarea id="uploadNotes" placeholder="Notes for admin review (tag suggestions, etc.)"></textarea>
+            </div>
+            <div class="form-group" id="protectedGroup">
+                <label>
+                        <input type="checkbox" id="protected">
+                        Protected (password required to view)
+                        </label>
+            </div>
+
+            <button type="submit" class="btn-primary" style="width: 100%; font-size: 1.125rem; padding: var(--spacing-md);">
+                <i class="fas fa-check"></i> Submit
+            </button>
+        </form>
+    </div>
+</div>
+
 
             <div id="queueContent" class="admin-content">
                 <div class="submission-queue" id="submissionQueue">

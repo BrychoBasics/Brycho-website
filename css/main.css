@@ -532,3 +532,37 @@ button {
         font-size: 1.25rem;
     }
 }
+
+
+.header-admin {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-left: auto;
+}
+
+.user-info {
+    color: var(--color-text-secondary);
+    font-size: 0.875rem;
+}
+
+.user-info span {
+    color: var(--color-accent-primary);
+    font-weight: 600;
+}
+
+.btn-logout {
+    background: transparent;
+    border: 1px solid var(--color-wood);
+    color: var(--color-text-primary);
+    padding: 6px 12px;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: all var(--transition-fast);
+}
+
+.btn-logout:hover {
+    border-color: var(--color-accent-primary);
+    color: var(--color-accent-primary);
+}
