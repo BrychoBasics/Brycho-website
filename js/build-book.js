@@ -207,14 +207,6 @@ function setupEventListeners() {
         });
     }
 
-    // Password prompt toggle (Ctrl+Shift+P)
-    document.addEventListener('keydown', (e) => {
-        if (e.ctrlKey && e.shiftKey && e.key === 'P') {
-            e.preventDefault();
-            togglePasswordPrompt();
-        }
-    });
-
     // Password submit
     const passwordSubmit = document.getElementById('passwordSubmit');
     const passwordInput = document.getElementById('passwordInput');
@@ -526,7 +518,7 @@ function renderGallery(images) {
         ` : ''}
     </div>
     ${img.status === 'pending' ? '<div class="pending-banner">Pending Review</div>' : ''}
-    ${img.protected ? '<div class="protected-badge">Protected</div>' : ''}
+    ${img.protected ? '<div class="protected-badge"><i class="fas fa-lock"></i></div>' : ''}
 ` : ''}
             
             <img class="gallery-item-image" src="${img.thumb || img.src}" alt="${img.title}" loading="lazy">
@@ -707,8 +699,21 @@ function renderLightboxContent(image, dbData, canEdit) {
     const allImageUrls = [image.src, ...(image.additionalImages || [])];
     const allThumbUrls = [image.thumb, ...(image.additionalThumbnails || [])];
     
-    // Set first image
-    document.getElementById('lightboxMainImage').src = allImageUrls[0];
+    // Show thumbnail immediately, then swap to full image when loaded
+    const mainImage = document.getElementById('lightboxMainImage');
+    mainImage.src = allThumbUrls[0] || allImageUrls[0]; // Show thumbnail first
+    
+    // Load full image in background
+    const fullImage = new Image();
+    fullImage.onload = () => {
+        mainImage.src = allImageUrls[0]; // Swap to full resolution
+    };
+    fullImage.src = allImageUrls[0];
+    
+    // Pre-load remaining carousel images in background
+    if (allImageUrls.length > 1) {
+        preloadCarouselImages(allImageUrls.slice(1));
+    }
     
     // Add pending banner if needed
 const existingBanner = document.querySelector('.lightbox-pending-banner');
@@ -838,6 +843,34 @@ window.switchLightboxImage = function(index, src) {
         thumb.classList.toggle('active', i === index);
     });
 };
+
+// Pre-load all carousel images
+function preloadCarouselImages(imageUrls) {
+    return new Promise((resolve) => {
+        if (!imageUrls || imageUrls.length === 0) {
+            resolve();
+            return;
+        }
+        
+        let loadedCount = 0;
+        const totalImages = imageUrls.length;
+        
+        imageUrls.forEach((url, index) => {
+            const img = new Image();
+            img.onload = img.onerror = () => {
+                loadedCount++;
+                if (index === 0) {
+                    // First image loaded - show it immediately
+                    resolve();
+                }
+            };
+            img.src = url;
+        });
+        
+        // Fallback in case first image fails to load
+        setTimeout(resolve, 2000);
+    });
+}
 
 function createAdminControlsSection() {
     const section = document.createElement('div');
@@ -1005,6 +1038,10 @@ function showAdminUI() {
         const roleDisplay = adminUser.role === 'admin' ? 'Admin' : 'Contributor';
         userName.textContent = `${adminUser.name} (${roleDisplay})`;
         headerAdmin.style.display = 'flex';
+
+        // Hide login button
+        const loginBtn = document.getElementById('loginBtn');
+        if (loginBtn) loginBtn.style.display = 'none';
     }
     
     // Show upload button
@@ -1045,6 +1082,10 @@ window.logout = function() {
     // Hide admin UI
     const headerAdmin = document.getElementById('headerAdmin');
     if (headerAdmin) headerAdmin.style.display = 'none';
+
+    // Show login button
+    const loginBtn = document.getElementById('loginBtn');
+    if (loginBtn) loginBtn.style.display = 'flex';
     
     // Reload images (hides protected content)
     loadImages().then(() => applyFilters());
@@ -1395,18 +1436,15 @@ window.toggleUploadTag = function(tagName) {
     if (button.classList.contains('selected')) {
         if (!uploadTags.includes(tagName)) {
             uploadTags.push(tagName);
-            updateUploadTagDisplay();
         }
     } else {
         uploadTags = uploadTags.filter(t => t !== tagName);
-        updateUploadTagDisplay();
     }
 };
 
 
 window.removeUploadTag = function(index) {
     uploadTags.splice(index, 1);
-    updateUploadTagDisplay();
 };
 
 async function handleBuildBookUpload(event) {
@@ -1553,7 +1591,6 @@ function resetUploadForm() {
     uploadImages = [];
     uploadTags = [];
     document.getElementById('uploadPreviews').innerHTML = '';
-    updateUploadTagDisplay();
 }
 
 // ========================================

@@ -44,6 +44,12 @@
             <a href="index.html">Home</a>
             <a href="valheim.html" class="active">Valheim</a>
         </nav>
+        </nav>
+        
+        <button onclick="togglePasswordPrompt()" class="btn-login" id="loginBtn">
+            <i class="fas fa-sign-in-alt"></i> Admin Log In
+        </button>
+
         
         <div class="header-admin" id="headerAdmin" style="display: none;">
             <span class="user-info">Logged in as <span id="headerUserName"></span></span>
@@ -153,7 +159,7 @@
             
             <div id="noResults" class="no-results" style="display: none;">
                 <i class="fas fa-search"></i>
-                <p>No techniques found matching your filters.</p>
+                <p>No ideas found matching your filters.</p>
                 <button id="resetFiltersBtn" class="btn-primary">Reset Filters</button>
             </div>
 

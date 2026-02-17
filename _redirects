@@ -1,4 +1,38 @@
-# Netlify redirects
+# Page Redirects
+
 /build    /build-book.html
-/signs    /sign-center.html
-#/valheim  /valheim.html
+/signs              /sign-center.html
+/ValheimSignGuide   /sign-center.html
+/valheimsignguide   /sign-center.html
+/sign-center        /valheim.html
+
+
+# Social Media Links
+
+/YouTube    https://www.youtube.com/c/BrychoBasics      301
+/youtube    https://www.youtube.com/c/BrychoBasics      301
+/Twitch     https://www.twitch.tv/brychobasics  301
+/twitch     https://www.twitch.tv/brychobasics  301
+/Twitter    https://x.com/BrychoBasics          301
+/twitter    https://x.com/BrychoBasics          301
+/@twitter   https://x.com/BrychoBasics          301
+/X          https://x.com/BrychoBasics          301
+/x          https://x.com/BrychoBasics          301
+/Instagram  https://www.instagram.com/bryce___krispies/ 301
+/instagram  https://www.instagram.com/bryce___krispies/ 301
+/Facebook   https://www.facebook.com/BrychoBasics       301
+/facebook   https://www.facebook.com/BrychoBasics       301
+/TikTok     https://www.tiktok.com/@brychobasics        301
+/tiktok     https://www.tiktok.com/@brychobasics        301
+/Discord    https://discord.com/invite/fFyp292WCq       301
+/discord    https://discord.com/invite/fFyp292WCq       301
+/Reddit     https://www.reddit.com/user/BrychoBasics/   301
+/reddit     https://www.reddit.com/user/BrychoBasics/   301
+/Donate     https://streamlabs.com/brychobasics/tip     301
+/donate     https://streamlabs.com/brychobasics/tip     301
+
+
+# Miscellaneous
+
+/Portfolio https://brycho.notion.site/Bryce-Erickson-Portfolio-c0a63c8b4d3144778315d7c553bb8dc2 301
+/VideoCV https://youtu.be/nV86bgA4zu4 301
