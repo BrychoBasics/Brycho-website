@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brycho's Valheim Projects</title>
+    
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/background.css">
+    <script src="js/background.js"></script>
+    
+    <style>
+        .valheim-hero {
+            min-height: calc(100vh - var(--header-height));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: var(--spacing-3xl) var(--spacing-lg);
+        }
+        
+        .valheim-content {
+            max-width: 1000px;
+            width: 100%;
+        }
+        
+        .valheim-title {
+            font-size: 5rem;
+            margin-bottom: var(--spacing-lg);
+            animation: fadeInUp 0.8s ease;
+        }
+        
+        .valheim-subtitle {
+            font-size: 1.5rem;
+            color: var(--color-text-secondary);
+            margin-bottom: var(--spacing-2xl);
+            animation: fadeInUp 1s ease;
+        }
+        
+        .project-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--spacing-xl);
+            animation: fadeInUp 1.2s ease;
+        }
+        
+        .project-card {
+            background: var(--color-bg-secondary);
+            border: 2px solid var(--color-wood);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            text-align: center;
+            transition: all var(--transition-base);
+            text-decoration: none;
+            display: block;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .project-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--color-accent-primary);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .project-card.disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .project-card.disabled:hover {
+            transform: none;
+            border-color: var(--color-wood);
+            box-shadow: none;
+        }
+        
+        /* Status Badge */
+        .status-badge {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 100px;
+            height: 100px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            transform: rotate(12deg);
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        .status-badge.beta {
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="%23d4764e"/><text x="50" y="58" font-family="Cinzel" font-size="20" font-weight="bold" fill="white" text-anchor="middle">BETA</text></svg>');
+        }
+        
+        .status-badge.coming-soon {
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="%23d4a861"/><text x="50" y="52" font-family="Cinzel" font-size="14" font-weight="bold" fill="white" text-anchor="middle">COMING</text><text x="50" y="68" font-family="Cinzel" font-size="14" font-weight="bold" fill="white" text-anchor="middle">SOON</text></svg>');
+        }
+        
+        .project-card i {
+            font-size: 3rem;
+            color: var(--color-accent-primary);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .project-card h2 {
+            font-size: 1.5rem;
+            margin-bottom: var(--spacing-sm);
+            color: var(--color-text-primary);
+        }
+        
+        .project-card p {
+            font-size: 1rem;
+            color: var(--color-text-secondary);
+            margin-bottom: 0;
+        }
+        
+        @media (max-width: 768px) {
+            .valheim-title {
+                font-size: 3rem;
+            }
+            
+            .valheim-subtitle {
+                font-size: 1.125rem;
+            }
+            
+            .project-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* --- TEST SCROLLING STYLES --- */
+        .lore-section {
+            max-width: 800px;
+            margin: 0 auto 100px auto;
+            padding: 50px;
+            background: rgba(0, 12, 36, 0.7);
+            backdrop-filter: blur(8px);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            position: relative;
+            z-index: 10;
+        }
+
+        .lore-section h2 {
+            font-family: 'Cinzel', serif;
+            color: #219BFF;
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .lore-section p {
+            font-family: 'Lora', serif;
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.8);
+            /* Massive margin to force scrolling */
+            margin-bottom: 35vh; 
+        }
+    </style>
+</head>
+<body>
+
+
+    <header class="site-header">
+        <div class="header-content">
+            <button class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <div class="logo">
+                <a href="index.html">
+                    <img src="images/Wordmark_small.png" alt="Brycho" style="height: 30px;">
+                </a>
+            </div>
+            
+            <nav class="main-nav">
+                <a href="index.html">Home</a>
+                <a href="valheim.html" class="active">Valheim</a>
+            </nav>
+        </div>
+    </header>
+    
+    <div class="mobile-menu">
+        <a href="index.html">Home</a>
+        <a href="valheim.html" class="active">Valheim</a>
+    </div>
+
+    <main class="valheim-hero">
+        <div class="valheim-content">
+            <h1 class="valheim-title">Valheim</h1>
+            
+            <div class="project-cards">
+                <a href="build-book.html" class="project-card">
+                    <div class="status-badge beta"></div>
+                    <i class="fas fa-book"></i>
+                    <h2>Brycho's Build Book</h2>
+                    <p>Level up your builds</p>
+                </a>
+                
+                <a href="sign-center.html" class="project-card disabled" onclick="return false;">
+                    <div class="status-badge coming-soon"></div>
+                    <i class="fas fa-sign"></i>
+                    <h2>The Sign Center</h2>
+                <p>Signs go brr</p>
+                </a>
+                
+                <a href="#" class="project-card disabled" onclick="return false;">
+                    <div class="status-badge coming-soon"></div>
+                    <i class="fas fa-crosshairs"></i>
+                    <h2>Centering Guide</h2>
+                    <p>Circles go brr</p>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <section class="lore-section">
+        <h2>Survival Guide</h2>
+        <p>
+            The tenth world is unforgiving. As you venture out of the Meadows and into the Black Forest, you'll need to prepare better food and craft stronger armor to withstand the harsh environments.
+        </p>
+
+        <h2>Creature Combat Tactics</h2>
+        <p>
+            It is crucial to learn the vulnerabilities of the beasts you hunt. For instance, bears possess thick hides that resist blunt force, making clubs entirely ineffective. Their primary weakness is pierce damage, so relying on bows with flint or better arrows, or a well-timed spear thrust, will give you the upper hand in a forest encounter.
+        </p>
+
+        <h2>The Swamps</h2>
+        <p>
+            A foul stench permeates the air. Draugr patrol the sunken crypts, and leeches lurk in the murky waters. Poison resistance mead is absolutely mandatory before stepping foot in this biome.
+        </p>
+    </section>
+
+    <script src="js/navigation.js"></script>
+    </body>
+</html>

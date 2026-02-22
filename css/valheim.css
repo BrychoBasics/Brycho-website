@@ -1,0 +1,228 @@
+.valheim-hero {
+    min-height: calc(100vh - var(--header-height));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: var(--spacing-3xl) var(--spacing-lg);
+}
+
+.valheim-content {
+    max-width: 1000px;
+    width: 100%;
+}
+
+.valheim-title {
+    font-size: 5rem;
+    margin-bottom: var(--spacing-lg);
+    animation: fadeInUp 0.8s ease;
+}
+
+.valheim-subtitle {
+    font-size: 1.5rem;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-2xl);
+    animation: fadeInUp 1s ease;
+}
+
+.project-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: var(--spacing-xl);
+    animation: fadeInUp 1.2s ease;
+}
+
+.project-card {
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-decoration: none;
+    display: block;
+    position: relative;
+}
+
+.project-card:hover {
+    transform: translateY(-6px);
+}
+
+.project-card.disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.project-card i {
+    font-size: 2.5rem;
+    margin-bottom: var(--spacing-md);
+}
+
+.project-card h2 { font-size: 1.4rem; margin-bottom: var(--spacing-sm); }
+.project-card p { font-size: 0.95rem; margin-bottom: 0; }
+
+/* OPTION 1: LIGHT THEME */
+.card-light {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+.card-light h2 { color: #111; }
+.card-light p { color: #444; }
+.card-light i { color: #304D79; } /* Retro Blue Accent */
+
+/* OPTION 2: CHARCOAL THEME */
+.card-charcoal {
+    background: #1E232A;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+.card-charcoal h2 { color: white; }
+.card-charcoal p { color: rgba(255, 255, 255, 0.6); }
+.card-charcoal i { color: #C4994F; } /* Retro Gold Accent */
+
+/* OPTION 3: PRISM GLASS (Base - No Stripes) */
+.card-prism {
+    background: rgba(15, 20, 30, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    overflow: hidden; 
+}
+
+/* Ensure content stays above the background layers */
+.card-prism h2, .card-prism p, .card-prism i {
+    position: relative;
+    z-index: 2;
+}
+
+/* The Glowing Top Edge */
+.card-prism::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, #304D79, #C4994F, #BF6240, #A93242);
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+    z-index: 1;
+}
+.card-prism:hover::before { opacity: 1; height: 4px; }
+
+/* Text and Icon Colors */
+.card-prism h2 { color: white; }
+.card-prism p { color: rgba(255, 255, 255, 0.8); }
+.card-prism i {
+    background: linear-gradient(135deg, #C4994F, #BF6240);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* OPTION 3b: THE STRIPES MODIFIER */
+/* Add this class to any card to overlay the top-left stripes */
+.card-striped::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0; 
+    width: 140px;
+    height: 140px;
+    background: linear-gradient(135deg, 
+        transparent 0, transparent 40px,
+        #304D79 40px, #304D79 48px,
+        #C4994F 48px, #C4994F 56px,
+        #BF6240 56px, #BF6240 64px,
+        #A93242 64px, #A93242 72px,
+        transparent 72px
+    );
+    opacity: 0.8;
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* OPTION 4: PURE GLASS */
+.card-glass {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.2), 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+.card-glass h2 { color: white; }
+.card-glass p { color: rgba(255, 255, 255, 0.7); }
+.card-glass i { color: white; filter: drop-shadow(0 0 6px rgba(255,255,255,0.4)); }
+
+/* OPTION 5: GLASS WITH DIAGONAL RETRO STRIPES */
+.card-retro-stripes {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.2), 0 8px 24px rgba(0, 0, 0, 0.2);
+    overflow: hidden; /* Crucial: stops the stripes from bleeding out of the rounded corners */
+}
+
+.card-retro-stripes h2, .card-retro-stripes p, .card-retro-stripes i {
+    color: white;
+    position: relative; /* Ensures text stays above the stripes */
+    z-index: 2;
+}
+
+/* Draws the diagonal lines */
+.card-retro-stripes::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    width: 140px;
+    height: 140px;
+    /* Hard-stop gradient creates solid lines at a 45 degree angle */
+    background: linear-gradient(135deg,
+        transparent 0, transparent 40px,
+        #304D79 40px, #304D79 48px,  /* Blue */
+        #C4994F 48px, #C4994F 56px,  /* Gold */
+        #BF6240 56px, #BF6240 64px,  /* Orange */
+        #A93242 64px, #A93242 72px,  /* Red */
+        transparent 72px
+    );
+    opacity: 0.8;
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* Status Badge */
+.status-badge {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 100px;
+    height: 100px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    transform: rotate(12deg);
+    pointer-events: none;
+    z-index: 10;
+}
+
+.status-badge.beta {
+    background-image: url('../images/paper-graphics/beta.webp');
+}
+
+.status-badge.coming-soon {
+    background-image: url('../images/paper-graphics/comingsoon.webp');
+}
+
+
+
+@media (max-width: 768px) {
+    .valheim-title {
+        font-size: 3rem;
+    }
+    
+    .valheim-subtitle {
+        font-size: 1.125rem;
+    }
+    
+    .project-cards {
+        grid-template-columns: 1fr;
+    }
+}

@@ -12,164 +12,94 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/main.css">
     
-    <style>
-        .valheim-hero {
-            min-height: calc(100vh - var(--header-height));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: var(--spacing-3xl) var(--spacing-lg);
-        }
-        
-        .valheim-content {
-            max-width: 1000px;
-            width: 100%;
-        }
-        
-        .valheim-title {
-            font-size: 5rem;
-            margin-bottom: var(--spacing-lg);
-            animation: fadeInUp 0.8s ease;
-        }
-        
-        .valheim-subtitle {
-            font-size: 1.5rem;
-            color: var(--color-text-secondary);
-            margin-bottom: var(--spacing-2xl);
-            animation: fadeInUp 1s ease;
-        }
-        
-        .project-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: var(--spacing-xl);
-            animation: fadeInUp 1.2s ease;
-        }
-        
-        .project-card {
-            background: var(--color-bg-secondary);
-            border: 2px solid var(--color-wood);
-            border-radius: var(--radius-lg);
-            padding: var(--spacing-xl);
-            text-align: center;
-            transition: all var(--transition-base);
-            text-decoration: none;
-            display: block;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .project-card:hover {
-            transform: translateY(-8px);
-            border-color: var(--color-accent-primary);
-            box-shadow: var(--shadow-lg);
-        }
-        
-        .project-card.disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-        
-        .project-card.disabled:hover {
-            transform: none;
-            border-color: var(--color-wood);
-            box-shadow: none;
-        }
-        
-        /* Status Badge */
-        .status-badge {
-            position: absolute;
-            top: -10px;
-            right: -10px;
-            width: 100px;
-            height: 100px;
-            background-size: contain;
-            background-repeat: no-repeat;
-            transform: rotate(12deg);
-            pointer-events: none;
-            z-index: 10;
-        }
-        
-        .status-badge.beta {
-            /* Placeholder - you'll add your image */
-            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="%23d4764e"/><text x="50" y="58" font-family="Cinzel" font-size="20" font-weight="bold" fill="white" text-anchor="middle">BETA</text></svg>');
-        }
-        
-        .status-badge.coming-soon {
-            /* Placeholder - you'll add your image */
-            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="%23d4a861"/><text x="50" y="52" font-family="Cinzel" font-size="14" font-weight="bold" fill="white" text-anchor="middle">COMING</text><text x="50" y="68" font-family="Cinzel" font-size="14" font-weight="bold" fill="white" text-anchor="middle">SOON</text></svg>');
-        }
-        
-        .project-card i {
-            font-size: 3rem;
-            color: var(--color-accent-primary);
-            margin-bottom: var(--spacing-md);
-        }
-        
-        .project-card h2 {
-            font-size: 1.5rem;
-            margin-bottom: var(--spacing-sm);
-            color: var(--color-text-primary);
-        }
-        
-        .project-card p {
-            font-size: 1rem;
-            color: var(--color-text-secondary);
-            margin-bottom: 0;
-        }
-        
-        @media (max-width: 768px) {
-            .valheim-title {
-                font-size: 3rem;
-            }
-            
-            .valheim-subtitle {
-                font-size: 1.125rem;
-            }
-            
-            .project-cards {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/background.css">
+    
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/valheim.css">
+    
+    <script src="js/background.js"></script>
 </head>
 <body>
+
     <header class="site-header">
-        <div class="header-content">
-            <button class="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
+        <div class="header-glass-layer"></div>
+    
+        
+        <nav class="header-nav">
+            <div class="nav-left">
+                <button class="hamburger" aria-label="Toggle Menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <div class="desktop-links">
+            <a href="index.html" class="nav-link">Home</a>
             
-            <div class="logo">
-                <a href="index.html">
-                    <img src="images/Wordmark_small.png" alt="Brycho" style="height: 30px;">
+            <a href="valheim.html" class="nav-link valheim-link active glass-3d-btn">Valheim</a>
+        </div>
+            </div>
+
+            <div class="nav-center">
+                <a href="index.html" class="wordmark-link">
+                    <img src="images/Wordmark_small.png" alt="Brycho" class="wordmark-img">
                 </a>
             </div>
-            
-            <nav class="main-nav">
-                <a href="index.html">Home</a>
-                <a href="valheim.html" class="active">Valheim</a>
-            </nav>
-        </div>
+
+            <div class="nav-right desktop-auth">
+                <div class="auth-container" data-logged-in="true">
+                    
+                    <button class="header-btn glass-3d-btn login-btn">
+                        <i class="fas fa-arrow-right-to-bracket"></i> Log In
+                    </button>
+
+                    <div class="user-status-group">
+                        <div class="user-status-text">
+                            <span class="status-label">Logged in as</span>
+                            <span class="status-user"><strong class="username">Brycho test test test</strong> <span class="role">(Admin)</span></span>
+                        </div>
+                        
+                        <button class="header-btn glass-3d-btn logout-btn">
+                            <i class="fas fa-arrow-right-from-bracket"></i> Log Out
+                        </button>
+                    </div>
+
+                </div>
+
+                <button class="header-btn glass-3d-btn circle-btn share-btn" aria-label="Share">
+                    <img src="images/icons-svg/share.svg" alt="Share" class="share-icon">
+                </button>
+            </div>
+        </nav>
     </header>
     
-    <!-- Mobile Menu -->
     <div class="mobile-menu">
         <a href="index.html">Home</a>
         <a href="valheim.html" class="active">Valheim</a>
+        
+        <div class="mobile-divider"></div>
+        
+        <div class="mobile-auth-container" data-logged-in="false">
+            <a href="#" class="mobile-action-link login-link"><i class="fas fa-arrow-right-to-bracket"></i> Log In</a>
+            
+            <div class="mobile-user-status-group">
+                <span class="mobile-user-text">Logged in as <strong>Brycho</strong> (Admin)</span>
+                <a href="#" class="mobile-action-link logout-link"><i class="fas fa-arrow-right-from-bracket"></i> Log Out</a>
+            </div>
+        </div>
+        
+        <a href="#" class="mobile-action-link share-link"><i class="fas fa-share-nodes"></i> Share Board</a>
     </div>
 
-    <main class="valheim-hero">
+    <main id="swup" class="transition-fade">
+        <div class="valheim-hero">
         <div class="valheim-content">
-            <h1 class="valheim-title">Valheim</h1>
+            <h1 class="valheim-title"> _</h1>
+            <h1 class="valheim-title">VALHEIM</h1>
             
             <div class="project-cards">
-                <a href="build-book.html" class="project-card">
+                <a href="build-book.html" class="project-card disabled" onclick="return false;">
                     <div class="status-badge beta"></div>
                     <i class="fas fa-book"></i>
                     <h2>Brycho's Build Book</h2>
@@ -180,7 +110,7 @@
                     <div class="status-badge coming-soon"></div>
                     <i class="fas fa-sign"></i>
                     <h2>The Sign Center</h2>
-                <p>Signs go brr</p>
+                    <p>Signs go brr</p>
                 </a>
                 
                 <a href="#" class="project-card disabled" onclick="return false;">
@@ -189,11 +119,63 @@
                     <h2>Centering Guide</h2>
                     <p>Circles go brr</p>
                 </a>
+
+                <a href="#" class="project-card card-light">
+                    <i class="fas fa-book"></i>
+                    <h2>Light UI</h2>
+                    <p>Clean white, dark text, retro blue accent.</p>
+                </a>
+                
+                <a href="#" class="project-card card-charcoal">
+                    <i class="fas fa-sign"></i>
+                    <h2>Charcoal</h2>
+                    <p>Rich dark background, high contrast.</p>
+                </a>
+                
+                <a href="#" class="project-card card-prism">
+                    <i class="fas fa-gem"></i>
+                    <h2>Prism Glass</h2>
+                    <p>Dark glass refracting the retro spectrum.</p>
+                </a>
+
+                <a href="#" class="project-card card-glass">
+                    <i class="fas fa-crosshairs"></i>
+                    <h2>Pure Glass</h2>
+                    <p>Standard frosted UI across the board.</p>
+                </a>
+
+                <a href="#" class="project-card card-retro-stripes">
+                    <i class="fas fa-crosshairs"></i>
+                    <h2>Glass Retro</h2>
+                    <p>Standard frosted UI across the board.</p>
+                </a>
+
+                <a href="#" class="project-card card-prism card-striped">
+                    <i class="fas fa-gem"></i>
+                    <h2>Prism Retro</h2>
+                    <p>Dark glass refracting the retro spectrum.</p>
+                </a>
             </div>
+        </div>
         </div>
     </main>
 
+
+    <footer class="site-footer">
+        <div class="social-links">
+            <a href="https://www.youtube.com/BrychoBasics" target="_blank" rel="noopener noreferrer" class="glass-3d-btn circle-btn social-btn" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+            <a href="https://www.twitch.tv/brychobasics" target="_blank" rel="noopener noreferrer" class="glass-3d-btn circle-btn social-btn" aria-label="Twitch"><i class="fa-brands fa-twitch"></i></a>
+            <a href="https://x.com/BrychoBasics" target="_blank" rel="noopener noreferrer" class="glass-3d-btn circle-btn social-btn" aria-label="X / Twitter"><i class="fa-brands fa-twitter"></i></a>
+            <a href="https://discord.com/invite/fFyp292WCq" target="_blank" rel="noopener noreferrer" class="glass-3d-btn circle-btn social-btn" aria-label="Discord"><i class="fa-brands fa-discord"></i></a>
+            <a href="https://www.reddit.com/user/BrychoBasics/" target="_blank" rel="noopener noreferrer" class="glass-3d-btn circle-btn social-btn" aria-label="Reddit"><i class="fa-brands fa-reddit-alien"></i></a>
+            
+            <a href="https://www.tiktok.com/@brychobasics" target="_blank" rel="noopener noreferrer" class="glass-3d-btn circle-btn social-btn disabled" aria-disabled="true" aria-label="Tiktok"><i class="fa-brands fa-tiktok"></i></a>
+            <a href="#" class="glass-3d-btn circle-btn social-btn disabled" target="_blank" rel="noopener noreferrer" aria-disabled="true" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+            <a href="https://www.facebook.com/BrychoBasics" target="_blank" rel="noopener noreferrer" class="glass-3d-btn circle-btn social-btn disabled" aria-disabled="true" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/swup@4"></script>
     <script src="js/navigation.js"></script>
-    <!-- <script src="js/site-password.js"></script> --> <!-- Uncomment to enable site protection -->
 </body>
 </html>

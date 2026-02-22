@@ -1,0 +1,19 @@
+PROJECT CONTEXT & RULES:
+I am building a website with a persistent, animated background layer. The site uses Swup (PJAX) for page transitions so the background state is not destroyed during navigation.
+
+1. STRICT JAVASCRIPT ARCHITECTURE (SWUP RULE):
+Never write loose, globally executed event listeners. Because standard DOMContentLoaded does not fire on Swup page transitions, ALL interactive logic (galleries, tabs, buttons, forms) MUST be wrapped in modular functions (e.g., `initSignCenterTabs()`). These functions must be built to be called both on initial load and inside `swup.hooks.on('content:replace', ...)`.
+
+2. BACKGROUND ENGINE MECHANICS:
+- The background is a stop-motion aesthetic running on a strict 450ms `setInterval`. 
+- Parallax scrolling runs on a separate 56.25ms (450/8) interval to stay smooth but synced.
+- The grid uses `--base-cell-size` and `--zoom-ratio` CSS variables calculated via physical hardware dimensions to neutralize browser/Firefox zoom quirks. Do not alter this zoom-neutralization math.
+
+3. TEXTURE LAYER MECHANICS:
+- 4 WebP paper textures cycle every 450ms. 
+- Opacity must snap instantly (no CSS transitions/fades). 
+- Textures are dynamically loaded based on device physical pixels to prevent blurring: `-small.webp` (2420px), `-medium.webp` (3225px), and `-large.webp` (4840px).
+- The JS transform scale is strictly `1.05` to allow for horizontal/vertical flipping and random panning (up to 10%) without exposing edges. Do not add rotation to the JS transform.
+- The CSS sizes the images using `125vmax` with `object-fit: cover` to ensure the landscape texture safely covers portrait mobile screens without stretching or requiring JS rotation.
+
+When providing code, ensure it aligns with these constraints and does not overwrite or conflict with the existing background engine.

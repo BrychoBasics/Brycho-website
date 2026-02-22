@@ -473,14 +473,13 @@ function updateDisplay() {
 }
 
 function formatCreatorDisplay(source) {
-    const platformIcon = source.platform === 'original'
-        ? '<img src="images/hammer.png" class="creator-icon">'
-        : `<i class="fab fa-${source.platform} creator-icon"></i>`;
+    const platformIcon = getPlatformIcon(source.platform);
     
     let prefix = '';
     if (source.platform === 'reddit') prefix = 'u/';
-    else if (['twitter', 'instagram', 'discord'].includes(source.platform)) prefix = '@';
-    else if (['youtube', 'twitch'].includes(source.platform)) prefix = '';
+    else if (['twitter', 'instagram', 'discord', 'tiktok'].includes(source.platform)) prefix = '@';
+    else if (['youtube', 'twitch'].includes(source.platform)) prefix = '/';
+    // Original, custom, steam, facebook, nexus, thunderstore have no prefix
     
     const displayName = prefix + source.creator;
     
@@ -523,7 +522,7 @@ function renderGallery(images) {
             
             <img class="gallery-item-image" src="${img.thumb || img.src}" alt="${img.title}" loading="lazy">
             <div class="gallery-item-content">
-    <h3 class="gallery-item-title">${img.title}</h3>
+    <h3 class="gallery-item-title">${img.title}, by</h3>
     <div class="gallery-item-creator">
         ${formatCreatorDisplay(img.source)}
     </div>
@@ -667,6 +666,10 @@ function openLightbox(imageId) {
 
     const lightbox = document.getElementById('lightbox');
     if (!lightbox) return;
+    
+    // Clear previous image immediately before showing lightbox
+    const mainImage = document.getElementById('lightboxMainImage');
+    if (mainImage) mainImage.src = '';
 
     // Check edit permissions
     const canEdit = isAdminLoggedIn && (
@@ -701,6 +704,7 @@ function renderLightboxContent(image, dbData, canEdit) {
     
     // Show thumbnail immediately, then swap to full image when loaded
     const mainImage = document.getElementById('lightboxMainImage');
+    mainImage.src = ''; // Clear previous image immediately
     mainImage.src = allThumbUrls[0] || allImageUrls[0]; // Show thumbnail first
     
     // Load full image in background
@@ -750,22 +754,7 @@ if (image.status === 'pending' && isAdminLoggedIn) {
 
     // Source
     const sourceContainer = document.getElementById('lightboxSource');
-    const platformIcon = image.source.platform === 'original'
-        ? '<img src="images/hammer.png" style="width: 16px; height: 16px; display: inline-block;">'
-        : `<i class="fab fa-${image.source.platform}"></i>`;
-
-    if (image.source.link) {
-        sourceContainer.innerHTML = `
-            <a href="${image.source.link}" target="_blank">
-                ${platformIcon}
-                ${image.source.creator}
-            </a>
-        `;
-    } else {
-        sourceContainer.innerHTML = `
-            <span>${platformIcon} ${image.source.creator}</span>
-        `;
-    }
+    sourceContainer.innerHTML = formatCreatorDisplay(image.source);
 
     // Admin controls
     const adminControls = document.querySelector('.lightbox-admin-controls') || createAdminControlsSection();
@@ -1246,6 +1235,31 @@ window.toggleSourceType = function(type) {
     }
 };
 
+function getPlatformIcon(platform) {
+    const imgNames = {
+        original: 'hammer.png',
+        youtube: 'youtube-logo.svg',
+        twitch: 'twitch-logo.svg',
+        twitter: 'twitter-logo.webp',
+        reddit: 'reddit-logo.svg',
+        instagram: 'instagram-logo.png',
+        discord: 'discord-logo.png',
+        facebook: 'facebook-logo.png',
+        tiktok: 'tiktok-logo.png',
+        steam: 'steam-logo.png',
+        nexus: 'nexus-logo.svg',
+        thunderstore: 'thunderstore-logo.png',
+        custom: 'custom-logo.svg'
+    };
+
+    if (imgNames[platform]) {
+        return `<img src="images/${imgNames[platform]}" class="platform-icon-img">`;
+    }
+    
+    // Fallback for any unrecognized platform
+    return '<img src="images/custom-logo.svg" class="platform-icon-img">';
+}
+
 // Auto-detect platform from URL
 function detectPlatformFromUrl(url) {
     if (!url) return 'original';
@@ -1258,8 +1272,15 @@ function detectPlatformFromUrl(url) {
     if (urlLower.includes('reddit.com')) return 'reddit';
     if (urlLower.includes('instagram.com')) return 'instagram';
     if (urlLower.includes('discord.gg') || urlLower.includes('discord.com')) return 'discord';
+    if (urlLower.includes('facebook.com') || urlLower.includes('fb.com')) return 'facebook';
+    if (urlLower.includes('tiktok.com')) return 'tiktok';
+    if (urlLower.includes('steamcommunity.com') || urlLower.includes('store.steampowered.com')) return 'steam';
+    if (urlLower.includes('nexusmods.com')) return 'nexus';
+    if (urlLower.includes('thunderstore.io')) return 'thunderstore';
+    if (urlLower.includes('imgur.com')) return 'custom';
+
     
-    return 'custom'; // Globe icon
+    return 'custom'; // Globe icon for anything else
 }
 
 // Load creator names for autocomplete

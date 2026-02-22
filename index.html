@@ -4,64 +4,122 @@
     <meta charset="UTF-8">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="0; url=valheim.html">
-    <title>Brycho - Redirecting...</title>
-
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <title>Brycho's Valheim Projects</title>
     
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <style>
-        .redirect-screen {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: var(--spacing-xl);
-        }
-        
-        .redirect-content h1 {
-            font-size: 3rem;
-            margin-bottom: var(--spacing-md);
-        }
-        
-        .redirect-content p {
-            color: var(--color-text-secondary);
-            margin-bottom: var(--spacing-lg);
-        }
-        
-        .spinner {
-            width: 40px;
-            height: 40px;
-            margin: 0 auto;
-            border: 4px solid var(--color-bg-elevated);
-            border-top-color: var(--color-accent-primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-    </style>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/background.css">
+    
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/valheim.css">
+    
+    <script src="js/background.js"></script>
 </head>
 <body>
-    <p> TEST TEST TEST</p>
-    <div class="redirect-screen">
-        <div class="redirect-content">
-            <h1>BRYCHO</h1>
-            <p>Redirecting to Valheim projects...</p>
-            <div class="spinner"></div>
-            <p style="margin-top: var(--spacing-lg);">
-                <a href="valheim.html" style="color: var(--color-accent-light);">
-                    Click here if you're not redirected automatically
-                </a>
-            </p>
+
+    <header class="site-header">
+        <div class="header-glass-layer"></div>
+    
+        
+        <nav class="header-nav">
+            <div class="nav-left">
+                <button class="hamburger" aria-label="Toggle Menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <div class="desktop-links">
+            <a href="index.html" class="nav-link">Home</a>
+            
+            <a href="valheim.html" class="nav-link valheim-link active glass-3d-btn">Valheim</a>
         </div>
+            </div>
+
+            <div class="nav-center">
+                <a href="index.html" class="wordmark-link">
+                    <img src="images/Wordmark_small.png" alt="Brycho" class="wordmark-img">
+                </a>
+            </div>
+
+            <div class="nav-right desktop-auth">
+                <div class="auth-container" data-logged-in="true">
+                    
+                    <button class="header-btn glass-3d-btn login-btn">
+                        <i class="fas fa-arrow-right-to-bracket"></i> Log In
+                    </button>
+
+                    <div class="user-status-group">
+                        <div class="user-status-text">
+                            <span class="status-label">Logged in as</span>
+                            <span class="status-user"><strong class="username">Brycho test test test</strong> <span class="role">(Admin)</span></span>
+                        </div>
+                        
+                        <button class="header-btn glass-3d-btn logout-btn">
+                            <i class="fas fa-arrow-right-from-bracket"></i> Log Out
+                        </button>
+                    </div>
+
+                </div>
+
+                <button class="header-btn glass-3d-btn circle-btn share-btn" aria-label="Share">
+                    <img src="images/icons-svg/share.svg" alt="Share" class="share-icon">
+                </button>
+            </div>
+        </nav>
+    </header>
+    
+    <div class="mobile-menu">
+        <a href="index.html">Home</a>
+        <a href="valheim.html" class="active">Valheim</a>
+        
+        <div class="mobile-divider"></div>
+        
+        <div class="mobile-auth-container" data-logged-in="false">
+            <a href="#" class="mobile-action-link login-link"><i class="fas fa-arrow-right-to-bracket"></i> Log In</a>
+            
+            <div class="mobile-user-status-group">
+                <span class="mobile-user-text">Logged in as <strong>Brycho</strong> (Admin)</span>
+                <a href="#" class="mobile-action-link logout-link"><i class="fas fa-arrow-right-from-bracket"></i> Log Out</a>
+            </div>
+        </div>
+        
+        <a href="#" class="mobile-action-link share-link"><i class="fas fa-share-nodes"></i> Share Board</a>
     </div>
+
+
+    <main id="swup" class="transition-fade">
+
+
+
+
+
+    </main>
+
+    
+
+
+    <footer class="site-footer">
+        <div class="social-links">
+            <a href="https://www.youtube.com/BrychoBasics" target="_blank" rel="noopener noreferrer" class="glass-3d-btn circle-btn social-btn" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+            <a href="https://www.twitch.tv/brychobasics" target="_blank" rel="noopener noreferrer" class="glass-3d-btn circle-btn social-btn" aria-label="Twitch"><i class="fa-brands fa-twitch"></i></a>
+            <a href="https://x.com/BrychoBasics" target="_blank" rel="noopener noreferrer" class="glass-3d-btn circle-btn social-btn" aria-label="X / Twitter"><i class="fa-brands fa-twitter"></i></a>
+            <a href="https://discord.com/invite/fFyp292WCq" target="_blank" rel="noopener noreferrer" class="glass-3d-btn circle-btn social-btn" aria-label="Discord"><i class="fa-brands fa-discord"></i></a>
+            <a href="https://www.reddit.com/user/BrychoBasics/" target="_blank" rel="noopener noreferrer" class="glass-3d-btn circle-btn social-btn" aria-label="Reddit"><i class="fa-brands fa-reddit-alien"></i></a>
+            
+            <a href="https://www.tiktok.com/@brychobasics" target="_blank" rel="noopener noreferrer" class="glass-3d-btn circle-btn social-btn disabled" aria-disabled="true" aria-label="Tiktok"><i class="fa-brands fa-tiktok"></i></a>
+            <a href="#" class="glass-3d-btn circle-btn social-btn disabled" target="_blank" rel="noopener noreferrer" aria-disabled="true" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+            <a href="https://www.facebook.com/BrychoBasics" target="_blank" rel="noopener noreferrer" class="glass-3d-btn circle-btn social-btn disabled" aria-disabled="true" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+        </div>
+    </footer>
+
+
+    <script src="https://unpkg.com/swup@4"></script>
+    <script src="js/navigation.js"></script>
 </body>
 </html>

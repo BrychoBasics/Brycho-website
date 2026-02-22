@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1050">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #fff;
+      }
+
+      .cls-2 {
+        fill: #a970ff;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g id="Twitch">
+      <path class="cls-1" d="M200.51,48.17h657.39v329.48c0,235.4-191.12,426.52-426.52,426.52h-230.87V48.17h0Z"/>
+      <path class="cls-2" d="M187.5,0L0,187.5v675h225v187.5l187.5-187.5h150l337.5-337.5V0H187.5ZM825,487.5l-150,150h-150l-131.25,131.25v-131.25h-168.75V75h600v412.5Z"/>
+      <rect class="cls-2" x="637.5" y="206.25" width="75" height="225"/>
+      <rect class="cls-2" x="431.25" y="206.25" width="75" height="225"/>
+    </g>
+  </g>
+</svg>

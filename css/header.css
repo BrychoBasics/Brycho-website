@@ -1,0 +1,310 @@
+/* =========================================
+   VARIABLES & CORE HEADER
+   ========================================= */
+:root {
+    --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-valheim: 'Caesar Dressing', cursive;
+    --header-height: 80px; /* Scaled up ~10% */
+}
+
+.site-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: var(--header-height);
+    z-index: 1000;
+    pointer-events: none;
+}
+
+.header-glass-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 200px; /* Extended further down */
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    /* Stretches the gradient mask to match the new height */
+    -webkit-mask-image: linear-gradient(to bottom, black 0%, black 80px, transparent 200px);
+    mask-image: linear-gradient(to bottom, black 0%, black 80px, transparent 200px);
+    z-index: -1;
+}
+
+.header-nav {
+    display: flex; /* Changed from grid to flex */
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+    /* Dynamically shrinks edge padding on smaller screens */
+    padding: 0 clamp(1rem, 3vw, 4vw); 
+    pointer-events: auto;
+    position: relative; /* Anchors the absolutely positioned logo */
+}
+
+.nav-left, .nav-right {
+    display: flex;
+    align-items: center;
+}
+
+.nav-left { justify-content: flex-start; }
+
+/* Frees the logo from the flow so it never causes collision math */
+.nav-center { 
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex; 
+    justify-content: center; 
+}
+
+.nav-right { justify-content: flex-end; }
+
+.wordmark-img {
+    height: 34px; /* Scaled up ~10% */
+    width: auto;
+    display: block;
+    filter: drop-shadow(0px 4px 10px rgba(0,0,0,0.3)); 
+}
+
+/* =========================================
+   1. NAVIGATION LINKS (LEFT SIDE)
+   ========================================= */
+.desktop-links {
+    display: flex;
+    gap: 1rem; 
+    align-items: center;
+}
+
+.nav-link {
+    font-family: var(--font-ui);
+    color: white !important; /* Strictly prevents the orange text on hover */
+    text-decoration: none;
+    font-size: 1.05rem; /* Scaled up ~10% */
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    
+    height: 44px; /* Scaled up ~10% */
+    padding: 0 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    
+    background: transparent;
+    border: 1px solid transparent; 
+    border-radius: 30px;
+    transition: all 0.3s ease; 
+    flex-shrink: 0;
+}
+
+/* Full 3D Bubble Preview on Hover */
+.nav-link:hover:not(.active) {
+    background: rgba(255, 255, 255, 0.08); 
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 
+        inset 0 1px 2px rgba(255, 255, 255, 0.3), 
+        inset 0 -1px 2px rgba(0, 0, 0, 0.2), 
+        0 4px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* =========================================
+   2. DESKTOP AUTH & USER STATUS (RIGHT SIDE)
+   ========================================= */
+.desktop-auth {
+    display: flex;
+    align-items: center;
+    gap: 1rem; 
+    position: relative; /* Creates an anchor point for the absolute text below */
+}
+
+.auth-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem; 
+}
+
+.header-btn {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-family: var(--font-ui);
+}
+
+.user-status-group {
+    display: flex;
+    flex-direction: row; 
+    align-items: center;
+}
+
+.user-status-text {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    
+    display: flex;
+    flex-direction: row; 
+    align-items: center; 
+    justify-content: flex-end;
+    gap: 6px;
+    line-height: 1;
+    font-family: var(--font-ui);
+    white-space: nowrap; 
+    
+    /* The targeted blur & shadow fix */
+    padding: 5px 10px; /* Gives the blur some breathing room around the text */
+    border-radius: 30px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(6px);
+    /* The 3rd value (4px) controls how blurred the text drop-shadow is */
+    text-shadow: 0 2px 10px rgba(3, 3, 3, 0.3); 
+}
+
+.status-label {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.status-user {
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.status-user strong {
+    color: white;
+    font-weight: 600;
+}
+
+.status-user .role {
+    color: var(--color-accent-primary, #219BFF);
+    font-weight: 500;
+    font-size: 0.85rem;
+}
+
+
+
+.auth-container[data-logged-in="false"] .user-status-group { display: none; }
+.auth-container[data-logged-in="false"] .login-btn { display: flex; }
+.auth-container[data-logged-in="true"] .user-status-group { display: flex; }
+.auth-container[data-logged-in="true"] .login-btn { display: none; }
+
+/* =========================================
+   3. UNIFIED 3D GLASS STYLE
+   ========================================= */
+.glass-3d-btn {
+    background: rgba(255, 255, 255, 0.08); 
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: white !important; 
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    height: 44px; /* Scaled up ~10% */
+    box-sizing: border-box;
+    flex-shrink: 0;
+    
+    box-shadow: 
+        inset 0 1px 2px rgba(255, 255, 255, 0.3), 
+        inset 0 -1px 2px rgba(0, 0, 0, 0.2), 
+        0 4px 6px rgba(0, 0, 0, 0.15);
+        
+    /* Comma error fixed below */
+    transition: box-shadow 0.15s ease-out, transform 0.2s ease, background 0.3s ease;
+}
+
+/* Turn buttons a bit whiter on hover */
+.glass-3d-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: scale(1.02);
+}
+
+.glass-3d-btn:active {
+    transform: scale(0.97);
+}
+
+/* =========================================
+   UNIVERSAL CIRCULAR BUTTON MODIFIER
+   ========================================= */
+/* Add this class to any glass button to automatically fix its shape and physics */
+.glass-3d-btn.circle-btn {
+    border-radius: 50% !important; 
+    padding: 0; 
+    aspect-ratio: 1 / 1; /* Guarantees it stays perfectly round regardless of width */
+}
+
+/* Overrides the base physics for small circular elements */
+.glass-3d-btn.circle-btn:hover {
+    transform: scale(1.08); 
+}
+
+.glass-3d-btn.circle-btn:active {
+    transform: scale(0.90);
+}
+
+.login-btn, .logout-btn {
+    padding: 0 22px;
+    gap: 8px;
+    font-size: 1.05rem; /* Scaled up */
+    font-weight: 500;
+}
+
+.share-icon {
+    width: 20px; /* Scaled up */
+    height: 20px;
+    object-fit: contain;
+    display: block; 
+}
+
+/* =========================================
+   4. MOBILE MENU (HIDDEN ON DESKTOP)
+   ========================================= */
+.hamburger {
+    display: none; 
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+}
+
+.hamburger span {
+    display: block;
+    width: 25px;
+    height: 2px;
+    background-color: white;
+    margin: 5px 0;
+    transition: 0.3s;
+}
+
+.mobile-divider { height: 1px; background: rgba(255, 255, 255, 0.1); margin: 15px 0; }
+.mobile-action-link { display: flex; align-items: center; gap: 12px; font-family: var(--font-ui); color: rgba(255, 255, 255, 0.9); text-decoration: none; padding: 10px 0; font-size: 1rem; }
+.mobile-action-link i { color: var(--color-accent-primary, #219BFF); width: 20px; text-align: center; }
+.mobile-user-text { display: block; font-family: var(--font-ui); font-size: 0.85rem; color: rgba(255, 255, 255, 0.6); padding-bottom: 5px; }
+
+.mobile-auth-container[data-logged-in="false"] .mobile-user-status-group { display: none; }
+.mobile-auth-container[data-logged-in="false"] .login-link { display: flex; }
+.mobile-auth-container[data-logged-in="true"] .mobile-user-status-group { display: block; }
+.mobile-auth-container[data-logged-in="true"] .login-link { display: none; }
+
+/* Triggers mobile menu on smaller laptops and tablets before collision */
+@media (max-width: 825px) {
+    .desktop-links, .desktop-auth { display: none; }
+    .hamburger { display: block; }
+}
+
+
+/* Styling for your custom SVG Share Icon */
+.share-icon {
+    width: 18px; /* Perfect size inside a 40px button */
+    height: 18px;
+    object-fit: contain;
+    display: block; /* Prevents weird baseline spacing */
+    
+    filter: brightness(0) invert(1);
+    transform: translateX(-1px);
+}

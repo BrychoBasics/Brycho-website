@@ -607,6 +607,9 @@
     padding: var(--spacing-md);
     border-radius: var(--radius-md);
     margin-bottom: var(--spacing-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs); /* Add this line */
 }
 
 .lightbox-source a {
@@ -972,4 +975,250 @@
 .btn-login:hover {
     border-color: var(--color-accent-primary);
     color: var(--color-accent-primary);
+}
+
+.platform-icon-img {
+    width: 25px;
+    height: 25px;
+    display: inline-block;
+    vertical-align: middle;
+    object-fit: contain;
+}
+
+.lightbox-source::before {
+    content: 'Created by';
+    color: var(--color-text-secondary);
+    font-size: 0.9rem;
+}
+
+
+/* ========================================
+   THE WHITE CONTROL ISLAND
+   ======================================== */
+.control-island {
+    background: var(--color-island-bg);
+    border-radius: var(--radius-lg);
+    padding: 12px 24px;
+    margin: 40px auto;
+    max-width: 900px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow-float);
+    backdrop-filter: blur(10px);
+}
+
+.search-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--color-muted);
+}
+.search-bar {
+    border: none;
+    background: transparent;
+    font-size: 1rem;
+    width: 250px;
+}
+.search-bar:focus { outline: none; border: none; }
+
+.control-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.island-divider {
+    width: 1px;
+    height: 24px;
+    background: var(--color-border-island);
+    margin: 0 8px;
+}
+
+/* ========================================
+   GALLERY CARDS
+   ======================================== */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+    padding: 24px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.idea-card {
+    position: relative;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background: var(--color-card-tint);
+    transition: transform 0.3s ease, border-color 0.3s ease;
+    cursor: pointer;
+}
+
+.idea-card:hover {
+    border-color: var(--color-border-hover);
+    transform: translateY(-4px); /* The slight lift you requested */
+}
+
+/* Card Image Area */
+.card-image-wrapper {
+    width: 100%;
+    aspect-ratio: 16/9; /* Forces standard shape */
+    overflow: hidden;
+}
+.card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Card Text Area */
+.card-details {
+    padding: 16px;
+}
+.card-title {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+}
+.card-credit {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-ui);
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+}
+
+/* Card Overlays (Invisible until hover) */
+.card-admin-controls, .card-viewer-controls {
+    position: absolute;
+    top: 12px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+}
+.card-admin-controls { left: 12px; }
+.card-viewer-controls { right: 12px; }
+
+.idea-card:hover .card-admin-controls,
+.idea-card:hover .card-viewer-controls {
+    opacity: 1;
+}
+
+/* Bookmark Button */
+.btn-bookmark {
+    background: rgba(0,0,0,0.5);
+    border: 1px solid var(--color-border-subtle);
+    color: white;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+.btn-bookmark:hover { color: var(--color-bookmark); border-color: var(--color-bookmark); }
+
+
+
+/* ========================================
+   FLOATING FILTER MENU
+   ======================================== */
+.filter-menu {
+    position: absolute;
+    top: calc(100% + 12px); /* Floats exactly 12px below the Filters button */
+    left: 0;
+    width: 600px; /* Wide enough for your 5 categories */
+    background: var(--color-island-bg);
+    border-radius: var(--radius-md);
+    padding: 24px;
+    box-shadow: var(--shadow-float);
+    backdrop-filter: blur(10px);
+    
+    /* Hidden by default, toggled via JS */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.2s ease;
+    z-index: 200; /* Stays above the gallery cards */
+    cursor: default;
+}
+
+/* When the menu is active */
+.filter-menu.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.filter-menu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+    font-family: var(--font-ui);
+    color: var(--color-island-text);
+}
+
+.filter-modes {
+    display: flex;
+    gap: 16px;
+    font-size: 0.9rem;
+}
+
+.btn-text-only {
+    background: transparent;
+    border: none;
+    color: var(--color-text-muted);
+    font-family: var(--font-ui);
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+.btn-text-only:hover { color: var(--color-danger); }
+
+/* The 5 Columns */
+.filter-columns {
+    display: flex;
+    gap: 24px;
+}
+
+.filter-category {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.filter-category h4 {
+    font-family: var(--font-ui);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+}
+
+/* The Tags */
+.filter-tag {
+    background: transparent;
+    border: none;
+    padding: 4px 12px;
+    border-radius: 100px; /* Your requested rounded ends */
+    font-family: var(--font-ui);
+    font-size: 0.85rem;
+    color: var(--color-island-text);
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.filter-tag:hover { background: rgba(0,0,0,0.05); }
+
+/* The active state: high contrast block */
+.filter-tag.active {
+    background: var(--color-charcoal-base);
+    color: white;
 }

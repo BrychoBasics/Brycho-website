@@ -1,0 +1,28 @@
+Open image with photoshop.
+
+Add an adjustment curve, set input and output both to 75 (just cuts down on the really bright spots, for the particular gray paper textures only)
+
+Image > Image size > choose max (for textures needed extra leeway for movement within the image)
+
+choose bicubic sharper (reduction)
+
+(this preserves the most detail, but need to be cautious about the white hotspots, hence the adjustment curve)
+
+
+File > Save a copy > webp format
+
+70% quality... ends up pretty blurry, but nice file size. 
+
+80% quality... really nice, but start to get bad file size
+
+75% quality (default for "High")... nice sweet spot!
+
+
+
+
+UNDO IMAGE SIZE ADJUSTMENT BEFORE APPLYING A NEW ONE... multiple resizes greatly affects quality
+
+
+
+IF I WERE TO DO IT ALL AGAIN: Maybe lower the curve even more. 
+It sounds drastic but once it's on screen, those brights are really visible!
