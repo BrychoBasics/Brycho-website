@@ -102,19 +102,38 @@ updateGridSizing();
     const PARALLAX_SPEED = 0.1; 
     const SCROLL_STEP_MS = 450/8; 
 
+    // --- ADD THESE NEW VARIABLES ---
+    let cumulativeScroll = window.scrollY;
+    let lastScrollY = window.scrollY;
+
+    // Expose this to the global window so Swup can trigger it during page loads
+    window.syncBackgroundScroll = function() {
+        lastScrollY = window.scrollY;
+    };
+
     // ========================================
-    // STEPPED PARALLAX ENGINE
+    // STEPPED PARALLAX ENGINE (UPDATED)
     // ========================================
     function initSteppedScroll() {
         const parallaxGridWrapper = document.querySelector('.parallax-wrapper');
         
         if (parallaxGridWrapper) {
-            parallaxGridWrapper.style.transform = `translateY(${-(window.scrollY * PARALLAX_SPEED)}px)`;
+            parallaxGridWrapper.style.transform = `translateY(${-(cumulativeScroll * PARALLAX_SPEED)}px)`;
         }
         
         setInterval(() => {
             if (parallaxGridWrapper) {
-                const scrollOffset = -(window.scrollY * PARALLAX_SPEED);
+                const currentScrollY = window.scrollY;
+                
+                // Calculate how far we scrolled since the last tick
+                const delta = currentScrollY - lastScrollY;
+                
+                // Add the movement to our running total
+                cumulativeScroll += delta;
+                lastScrollY = currentScrollY;
+                
+                // Apply the cumulative distance to the parallax wrapper
+                const scrollOffset = -(cumulativeScroll * PARALLAX_SPEED);
                 parallaxGridWrapper.style.transform = `translateY(${scrollOffset}px)`;
             }
         }, SCROLL_STEP_MS);

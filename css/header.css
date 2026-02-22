@@ -92,10 +92,20 @@
     box-sizing: border-box;
     
     background: transparent;
-    border: 1px solid transparent; 
+    border: 1px solid rgba(255, 255, 255, 0); /* Replaces 'transparent' to stop the ghosting */
     border-radius: 30px;
     transition: all 0.3s ease; 
     flex-shrink: 0;
+}
+
+/* Gives unselected nav links the exact same tactile lift as the glass buttons */
+.nav-link:hover {
+    transform: scale(1.03);
+}
+
+/* Gives them the satisfying physical press when clicked */
+.nav-link:active {
+    transform: scale(0.97);
 }
 
 /* Full 3D Bubble Preview on Hover */

@@ -94,6 +94,85 @@ body {
     padding: 0 var(--spacing-lg);
 }
 
+/* =========================================
+   INVISIBLE SCROLLBAR & LAYOUT FIX
+   ========================================= */
+html {
+    scroll-behavior: smooth;
+    /* Hides scrollbar in Firefox */
+    scrollbar-width: none; 
+    /* Hides scrollbar in IE/Edge */
+    -ms-overflow-style: none; 
+}
+
+/* Hides scrollbar in Chrome, Safari, and Opera */
+::-webkit-scrollbar {
+    display: none;
+}
+
+/* =========================================
+   CUSTOM FLOATING SCROLLBAR
+   ========================================= */
+.custom-scrollbar {
+    position: fixed;
+    top: 2px;
+    right: 0; /* Pushed completely flush to the screen edge */
+    width: 25px; /* A wide invisible track to easily catch your mouse hover */
+    height: calc(100vh - 4px);
+    z-index: 9999;
+    
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: auto; 
+}
+
+/* Shows the scrollbar when scrolling, hovering, or dragging */
+.custom-scrollbar.is-scrolling,
+.custom-scrollbar:hover,
+.custom-scrollbar.is-dragging {
+    opacity: 1;
+}
+
+.custom-scroll-thumb {
+    position: absolute;
+    top: 0;
+    right: 5px; /* Visually pushes the frosted glass 5px away from the right edge */
+    width: 10px; /* The physical visual width of the glass pill */
+    
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border-radius: 10px;
+    cursor: grab;
+}
+
+/* THE INVISIBLE HIT-BOX */
+/* This extends the clickable drag area all the way to the screen edge */
+.custom-scroll-thumb::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: -5px; /* Reaches across the 5px gap to touch the screen edge */
+    left: -10px; /* Reaches left to make it easier to grab without pinpoint accuracy */
+}
+
+
+.custom-scrollbar.is-dragging .custom-scroll-thumb,
+.custom-scroll-thumb:hover {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.custom-scrollbar.is-dragging .custom-scroll-thumb {
+    cursor: grabbing;
+}
+
+/* Prevents accidental text highlighting while dragging the scrollbar */
+body.is-dragging-scrollbar {
+    user-select: none;
+    -webkit-user-select: none;
+}
+
 /* ========================================
    TYPOGRAPHY
    ======================================== */

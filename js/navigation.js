@@ -2,6 +2,47 @@
 // Initialize Swup
 const swup = new Swup();
 
+// Tell Swup to lock the scroll position instead of jumping to the top
+swup.hooks.on('visit:start', (visit) => {
+    visit.scroll.reset = false;
+});
+
+
+// Tell the header to update the active link after every page transition
+swup.hooks.on('page:view', () => {
+    // Get the current URL path (e.g., '/valheim.html' or '/')
+    const currentPath = window.location.pathname;
+    
+    // Select all your desktop navigation links
+    const navLinks = document.querySelectorAll('.desktop-links .nav-link');
+    
+    navLinks.forEach(link => {
+        // 1. Remove the active classes from ALL links
+        link.classList.remove('active', 'glass-3d-btn');
+        
+        // 2. Wipe out any inline box-shadows left behind by the hover script
+        link.removeAttribute('style'); 
+        
+        // 3. Look at where this specific link is trying to go
+        const linkHref = link.getAttribute('href');
+        
+        if (currentPath.endsWith(linkHref) || (currentPath.endsWith('/') && linkHref === 'index.html')) {
+            link.classList.add('active', 'glass-3d-btn');
+        }
+
+        
+    });
+
+    // Force the scrollbar to recalculate its size for the new page
+    updateCustomScrollbar();
+
+    if (window.syncBackgroundScroll) {
+        window.syncBackgroundScroll();
+    }
+    
+});
+
+
 
 // ========================================
 // NAVIGATION SYSTEM
@@ -82,3 +123,99 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+
+
+
+// =========================================
+// CUSTOM SCROLLBAR ENGINE
+// =========================================
+const scrollbar = document.querySelector('.custom-scrollbar');
+const thumb = document.querySelector('.custom-scroll-thumb');
+
+let scrollTimeout;
+let isDragging = false;
+let startY;
+let startScrollY;
+
+function updateCustomScrollbar() {
+    if (!thumb || !scrollbar) return;
+
+    const windowHeight = window.innerHeight;
+    const documentHeight = document.documentElement.scrollHeight;
+    
+    // Hide entirely if page is too short to scroll
+    if (documentHeight <= windowHeight) {
+        scrollbar.style.display = 'none';
+        return;
+    } else {
+        scrollbar.style.display = 'block';
+    }
+
+    const scrollRatio = windowHeight / documentHeight;
+    const thumbHeight = Math.max(scrollRatio * windowHeight, 40);
+    thumb.style.height = `${thumbHeight}px`;
+
+    const scrollY = window.scrollY;
+    const maxScroll = documentHeight - windowHeight;
+    const maxThumbScroll = windowHeight - thumbHeight - 4;
+    
+    const thumbPosition = (scrollY / maxScroll) * maxThumbScroll;
+    thumb.style.transform = `translateY(${thumbPosition}px)`;
+
+    // Auto-Hide Timer: Show scrollbar while scrolling, hide after 1 second of inactivity
+    if (!isDragging) {
+        scrollbar.classList.add('is-scrolling');
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
+            scrollbar.classList.remove('is-scrolling');
+        }, 1000);
+    }
+}
+
+// Attach Drag Mechanics
+if (thumb && scrollbar) {
+    // 1. User clicks the thumb
+    thumb.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        startY = e.clientY;
+        startScrollY = window.scrollY;
+        
+        scrollbar.classList.add('is-dragging');
+        document.body.classList.add('is-dragging-scrollbar');
+    });
+
+    // 2. User moves the mouse while holding the click
+    document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        
+        const windowHeight = window.innerHeight;
+        const documentHeight = document.documentElement.scrollHeight;
+        const maxScroll = documentHeight - windowHeight;
+        const maxThumbScroll = windowHeight - thumb.offsetHeight - 4;
+        
+        // Calculate physical mouse movement
+        const deltaY = e.clientY - startY;
+        
+        // Convert mouse movement into page scroll distance
+        const scrollMultiplier = maxScroll / maxThumbScroll;
+        window.scrollTo(0, startScrollY + (deltaY * scrollMultiplier));
+    });
+
+    // 3. User releases the click
+    document.addEventListener('mouseup', () => {
+        if (!isDragging) return;
+        isDragging = false;
+        
+        scrollbar.classList.remove('is-dragging');
+        document.body.classList.remove('is-dragging-scrollbar');
+        
+        // Trigger the fade-out timer now that dragging stopped
+        updateCustomScrollbar();
+    });
+}
+
+// Event Listeners
+window.addEventListener('scroll', updateCustomScrollbar);
+window.addEventListener('resize', updateCustomScrollbar);
+updateCustomScrollbar(); // Run on initial load
