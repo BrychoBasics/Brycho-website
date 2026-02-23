@@ -1,61 +1,71 @@
 /* ========================================
-   CSS VARIABLES - NORDIC WORKSHOP THEME
+   CUSTOM FONTS
+   ======================================== */
+
+/* 1. Norse - Regular */
+@font-face {
+    font-family: 'Norse';
+    src: url('../fonts/Norse.otf') format('opentype');
+    font-weight: normal; /* Maps to 400 */
+    font-style: normal;
+    font-display: swap;
+}
+
+/* 2. Norse - Bold */
+@font-face {
+    font-family: 'Norse';
+    src: url('../fonts/Norsebold.otf') format('opentype');
+    font-weight: bold; /* Maps to 700 */
+    font-style: normal;
+    font-display: swap;
+}
+
+
+/* ========================================
+   CSS VARIABLES - PRISM & GLASS THEME
    ======================================== */
 :root {
-    /* Colors - Warm Workshop Palette */
-    --color-bg-primary: #1a1612;
-    --color-bg-secondary: #2a221c;
-    --color-bg-elevated: #352d26;
-    --color-bg-hover: #3d342c;
-    
-    --color-text-primary: #e8dfd6;
-    --color-text-secondary: #c4b5a8;
-    --color-text-muted: #8a7d72;
-    
-    --color-accent-primary: #d4764e;
-    --color-accent-secondary: #b85c38;
-    --color-accent-light: #e89b75;
-    
-    --color-wood: #5c4a3a;
-    --color-ember: #e8734f;
-    --color-stone: #6b6358;
-    --color-gold: #d4a861;
-    
-    --color-success: #7da87b;
-    --color-warning: #d4a861;
-    --color-error: #c4574e;
-    
+    /* Layout & Grid Math */
+    --header-height: 80px;
+    --zoom-ratio: 1;
+    --base-cell-size: 110px;
+    --cell-size: calc(var(--base-cell-size) / var(--zoom-ratio));
+
     /* Typography */
-    --font-display: 'Cinzel', serif;
+    --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     --font-body: 'Lora', serif;
+    --font-valheim: 'Caesar Dressing', cursive;
+    --font-valheim2: 'Norse', sans-serif;
+
+
+    /* Core Colors */
+    --white: #F5F5F5;
+    --text-muted: #c4b5a8; 
+    --dark-charcoal: #141414;
+    --charcoal: #1F1F1F;
+    --light-charcoal: #4F4F4F;
     
-    /* Spacing */
-    --spacing-xs: 0.25rem;
-    --spacing-sm: 0.5rem;
-    --spacing-md: 1rem;
-    --spacing-lg: 1.5rem;
-    --spacing-xl: 2rem;
-    --spacing-2xl: 3rem;
-    --spacing-3xl: 4rem;
-    
-    /* Border Radius */
-    --radius-sm: 4px;
-    --radius-md: 8px;
-    --radius-lg: 12px;
-    
-    /* Shadows */
-    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
-    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
-    
-    /* Transitions */
-    --transition-fast: 150ms ease;
-    --transition-base: 250ms ease;
-    --transition-slow: 400ms ease;
-    
-    /* Layout */
-    --max-width: 1400px;
-    --header-height: 70px;
+    --blue: #0D3163;
+    --light-blue: #135496;
+
+    /* Prism Backgrounds */
+    --bg-light-prism: rgba(245, 245, 245, 0.6); /* --white at 0.6 opacity */
+    --bg-dark-prism: rgba(6, 23, 45, 0.7);      /* #06172d at 0.7 opacity */
+
+    /* Retro Colors */
+    --retro-red: #C52B40;
+    --retro-orange: #F28140;
+    --retro-yellow: #F6BD5A;
+    --retro-vanilla: #F3E9BA;
+
+    /* Gradient Colors */
+    --gradient-dark-blue: #00133D;
+    --gradient-med-blue: var(--blue);
+    --gradient-light-blue: #0D61A5;
+
+    /* Universal UI Transitions */
+    --transition-fast: 0.15s ease-out;
+    --transition-base: 0.3s ease;
 }
 
 /* ========================================
@@ -75,24 +85,62 @@ body {
     font-family: var(--font-body);
     font-size: 16px;
     line-height: 1.6;
-    color: var(--color-text-primary);
-    background-color: var(--color-bg-primary);
+    color: var(--white);
+    background-color: var(--dark-charcoal);
+    
     background-image: 
-        radial-gradient(circle at 20% 50%, rgba(212, 118, 78, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 20% 50%, rgba(212, 118, 78, 0.03) 0%, transparent 50%), 
         radial-gradient(circle at 80% 80%, rgba(212, 168, 97, 0.02) 0%, transparent 50%);
     background-attachment: fixed;
-    padding-top: 0px; /* so content leaves the header alone at the top*/
+    
+    margin: 0;
     display: flex;
     flex-direction: column;
-    min-height: 100vh; /* Forces the body to be at least as tall as the screen */
-    margin: 0;
+    min-height: 100vh;
 }
+
+/* Forces the main container to fill all available space between header and footer */
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+
+
+
 
 .container {
     max-width: var(--max-width);
     margin: 0 auto;
     padding: 0 var(--spacing-lg);
 }
+
+
+/* =========================================
+   GLOBAL TYPOGRAPHY
+   ========================================= */
+/* Force all headings to use the crisp UI font */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-ui);
+    font-weight: 600;
+    color: var(--white);
+    margin-top: 0;
+}
+
+/* Ensure menus don't accidentally inherit body fonts */
+.login-menu, 
+.share-menu, 
+.login-menu input, 
+.login-menu button {
+    font-family: var(--font-ui);
+}
+
+/* Make sure the Lora serif font is strictly used for readable paragraph text */
+p {
+    font-family: var(--font-body);
+}
+
 
 /* =========================================
    INVISIBLE SCROLLBAR & LAYOUT FIX
@@ -173,253 +221,6 @@ body.is-dragging-scrollbar {
     -webkit-user-select: none;
 }
 
-/* ========================================
-   TYPOGRAPHY
-   ======================================== */
-h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-display);
-    font-weight: 700;
-    line-height: 1.2;
-    color: var(--color-text-primary);
-}
-
-h1 { font-size: 3rem; }
-h2 { font-size: 2.25rem; }
-h3 { font-size: 1.75rem; }
-h4 { font-size: 1.5rem; }
-h5 { font-size: 1.25rem; }
-h6 { font-size: 1.125rem; }
-
-p {
-    margin-bottom: var(--spacing-md);
-}
-
-a {
-    color: var(--color-accent-light);
-    text-decoration: none;
-    transition: color var(--transition-fast);
-}
-
-a:hover {
-    color: var(--color-accent-primary);
-}
-
-/* ========================================
-   BUTTONS
-   ======================================== */
-button {
-    font-family: var(--font-body);
-    cursor: pointer;
-    border: none;
-    transition: all var(--transition-base);
-}
-
-.btn-primary {
-    background: linear-gradient(135deg, var(--color-accent-primary), var(--color-accent-secondary));
-    color: white;
-    padding: var(--spacing-sm) var(--spacing-lg);
-    border-radius: var(--radius-md);
-    font-weight: 600;
-    font-size: 1rem;
-    box-shadow: var(--shadow-sm);
-}
-
-.btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-}
-
-.btn-secondary {
-    background: var(--color-bg-elevated);
-    color: var(--color-text-primary);
-    padding: var(--spacing-sm) var(--spacing-lg);
-    border-radius: var(--radius-md);
-    border: 1px solid var(--color-wood);
-}
-
-.btn-secondary:hover {
-    background: var(--color-bg-hover);
-    border-color: var(--color-accent-primary);
-}
-
-.icon-btn {
-    background: var(--color-bg-elevated);
-    color: var(--color-text-primary);
-    width: 40px;
-    height: 40px;
-    border-radius: var(--radius-md);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    border: 1px solid transparent;
-}
-
-.icon-btn:hover {
-    background: var(--color-bg-hover);
-    border-color: var(--color-accent-primary);
-    color: var(--color-accent-light);
-}
-
-/* ========================================
-   HEADER - CENTERED NAVIGATION
-   ======================================== */
-.site-header {
-    /* 1. Change the background from a solid color to transparent 
-          (or a very sheer tint if you need a little more readability) */
-    background: transparent; 
-    
-    /* 2. Keep the blur! This creates the "frosted glass" effect over your moving grid */
-    backdrop-filter: blur(2px);
-    -webkit-backdrop-filter: blur(10px); /* Safari support */
-    
-    /* Keep all your structural settings exactly as they were */
-    position: sticky;
-    top: 0;
-    z-index: 1000; /* Bumped this to 1000 just to be incredibly safe */
-    height: var(--header-height);
-    
-}
-
-.header-content {
-    max-width: var(--max-width);
-    margin: 0 auto;
-    padding: 0 var(--spacing-lg);
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-}
-
-.logo {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-.logo-text {
-    font-family: var(--font-display);
-    font-size: 1.75rem;
-    font-weight: 900;
-    letter-spacing: 0.05em;
-    background: linear-gradient(135deg, var(--color-accent-light), var(--color-gold));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-main {
-    flex: 1; /* Tells the main content wrapper to grow and push the footer down */
-}
-
-.main-nav {
-    display: flex;
-    gap: var(--spacing-xl);
-    align-items: center;
-    position: absolute;
-    left: var(--spacing-lg);
-}
-
-.main-nav a {
-    font-family: var(--font-display);
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--color-text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    padding: var(--spacing-sm) var(--spacing-md);
-    border-radius: var(--radius-sm);
-    transition: all var(--transition-fast);
-}
-
-.main-nav a:hover,
-.main-nav a.active {
-    color: var(--color-accent-light);
-    background: var(--color-bg-elevated);
-}
-
-.main-nav a.coming-soon {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-/* Hamburger Menu */
-.hamburger {
-    display: none;
-    position: absolute;
-    left: var(--spacing-lg);
-    width: 30px;
-    height: 30px;
-    flex-direction: column;
-    justify-content: space-around;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    z-index: 110;
-}
-
-.hamburger span {
-    width: 100%;
-    height: 3px;
-    background: var(--color-text-primary);
-    border-radius: 2px;
-    transition: all var(--transition-base);
-}
-
-.hamburger.active span:nth-child(1) {
-    transform: rotate(45deg) translate(8px, 8px);
-}
-
-.hamburger.active span:nth-child(2) {
-    opacity: 0;
-}
-
-.hamburger.active span:nth-child(3) {
-    transform: rotate(-45deg) translate(7px, -7px);
-}
-
-/* Mobile Menu Overlay */
-.mobile-menu {
-    position: fixed;
-    top: var(--header-height);
-    left: 0;
-    width: 100%;
-    height: calc(100vh - var(--header-height));
-    background: var(--color-bg-secondary);
-    display: none;
-    flex-direction: column;
-    padding: var(--spacing-xl);
-    gap: var(--spacing-md);
-    z-index: 99;
-    opacity: 0;
-    transform: translateY(-20px);
-    transition: opacity var(--transition-base), transform var(--transition-base);
-}
-
-.mobile-menu.active {
-    display: flex;
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.mobile-menu a {
-    font-family: var(--font-display);
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: var(--color-text-primary);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    padding: var(--spacing-md);
-    border-bottom: 1px solid var(--color-wood);
-    transition: all var(--transition-fast);
-}
-
-.mobile-menu a:hover {
-    color: var(--color-accent-light);
-    padding-left: var(--spacing-lg);
-}
 
 /* ========================================
    HERO SECTION
@@ -461,6 +262,38 @@ main {
         transform: translateY(0);
     }
 }
+/* =========================================
+   UTILITY BUTTONS
+   ========================================= */
+.btn-blue {
+    background-color: var(--light-blue);
+    color: var(--white);
+    border: none;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.btn-blue:hover {
+    background-color: var(--blue); /* Darkens on hover */
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.btn-blue:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.btn-blue i {
+    color: var(--white);
+    font-size: 1.1rem;
+    line-height: 1;
+}
+
 
 /* ========================================
    LOADING & EMPTY STATES
@@ -495,77 +328,7 @@ main {
     margin-bottom: var(--spacing-lg);
 }
 
-/* ========================================
-   MODAL SYSTEM
-   ======================================== */
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 200;
-    animation: fadeIn var(--transition-base);
-}
 
-.modal.active {
-    display: flex;
-}
-
-.modal-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(4px);
-}
-
-.modal-content {
-    position: relative;
-    background: var(--color-bg-secondary);
-    border: 2px solid var(--color-wood);
-    border-radius: var(--radius-lg);
-    max-width: 600px;
-    width: 90%;
-    max-height: 80vh;
-    overflow-y: auto;
-    box-shadow: var(--shadow-lg);
-    animation: scaleIn var(--transition-base);
-}
-
-.modal-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: var(--spacing-lg);
-    border-bottom: 2px solid var(--color-wood);
-}
-
-.modal-header h2 {
-    font-size: 1.5rem;
-    margin: 0;
-}
-
-.modal-close {
-    background: none;
-    color: var(--color-text-secondary);
-    font-size: 1.5rem;
-    padding: var(--spacing-sm);
-    cursor: pointer;
-}
-
-.modal-close:hover {
-    color: var(--color-accent-primary);
-}
-
-.modal-body {
-    padding: var(--spacing-lg);
-}
 
 @keyframes fadeIn {
     from { opacity: 0; }
@@ -836,6 +599,7 @@ main {
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    text-decoration: none !important;
 }
 
 .social-btn i {
@@ -866,3 +630,127 @@ html.is-animating .transition-fade {
     opacity: 0;
     transform: translateY(10px); /* Adds a slight vertical drop as it fades */
 }
+
+
+
+
+
+
+/* =========================================
+   GLOBAL PRISM CARDS
+   ========================================= */
+.prism {
+    container-type: inline-size;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 20px;
+    
+    text-align: center;
+    text-decoration: none;
+    border-radius: 16px;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease;
+    overflow: visible;
+}
+
+/* Restoring your exact project-card typography and spacing */
+.prism i {
+    font-size: 2.5rem;
+    margin-bottom: var(--spacing-md);
+}
+
+.prism h2 { 
+    font-size: 1.4rem; 
+    margin-bottom: var(--spacing-sm); 
+}
+
+.prism p { 
+    font-size: 0.95rem; 
+    margin-bottom: 0; 
+    font-weight: 500;
+}
+
+.prism:hover { transform: scale(1.02); }
+.prism:active { transform: scale(0.98); }
+
+.prism-blur {
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+}
+
+/* =========================================
+   LIGHT PRISM
+   ========================================= */
+.prism.light-prism {
+    background: rgba(245, 245, 245, 0.6); 
+    border-top: 1px solid rgba(255, 255, 255, 0.6);
+    border-left: 1px solid rgba(255, 255, 255, 0.4);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.4), 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.prism.light-prism:hover {
+    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.6), 0 12px 28px rgba(0, 0, 0, 0.2);
+}
+
+/* Titles strictly forced to Charcoal */
+.prism.light-prism h1, .prism.light-prism h2, .prism.light-prism h3 { color: #1F1F1F; }
+
+/* The Illusion Trick: Light Prism */
+.prism.light-prism i, .prism.light-prism p, .prism.light-prism .accent {
+    background: linear-gradient(135deg, #0D61A5 0%, #0D3163 50%, #00133D 100%);
+    background-size: 100cqw 100cqw; /* Tighter box so edge colors don't bleed away */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Isolate the brightness boost to text only */
+.prism.light-prism p, .prism.light-prism .accent { filter: brightness(1.5); }
+
+
+/* =========================================
+   DARK PRISM
+   ========================================= */
+.prism.dark-prism {
+    background: rgba(6, 23, 45, 0.7); 
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    border-right: 1px solid rgba(0, 0, 0, 0.4);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.6);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.08), 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+
+/* Titles strictly forced to Soft White */
+.prism.dark-prism h1, .prism.dark-prism h2, .prism.dark-prism h3 { color: #F5F5F5; }
+
+/* The Illusion Trick: Dark Prism */
+.prism.dark-prism i, .prism.dark-prism p, .prism.dark-prism .accent {
+    background: linear-gradient(135deg, #F3E9BA, #F6BD5A, #F28140, #C52B40);
+    background-size: 100cqw 100cqw;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Isolate the brightness boost to text only */
+.prism.dark-prism p, .prism.dark-prism .accent { filter: brightness(1.25); }
+
+/* =========================================
+   PRISM GRADIENT POSITIONING - i for FA icons,
+   .accent for wildcard, and p for paragraphs
+   ========================================= */
+
+/* Granular positioning for Light Prism */
+.prism.light-prism i       { background-position: 30% 40%; } /* Top center, but pushed down 10% */
+.prism.light-prism .accent { background-position: 50% 50%; } /* Dead center */
+.prism.light-prism p       { background-position: 50% 60%; } /* Bottom center, pulled up 15% */
+
+/* Granular positioning for Dark Prism */
+.prism.dark-prism i       { background-position: 50% 40%; }
+.prism.dark-prism .accent { background-position: 50% 50%; }
+.prism.dark-prism p       { background-position: 50% 60%; }

@@ -22,12 +22,12 @@
     top: 0;
     left: 0;
     width: 100%;
-    height: 200px; /* Extended further down */
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    height: 120px; /* Extended further down */
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
     /* Stretches the gradient mask to match the new height */
-    -webkit-mask-image: linear-gradient(to bottom, black 0%, black 80px, transparent 200px);
-    mask-image: linear-gradient(to bottom, black 0%, black 80px, transparent 200px);
+    -webkit-mask-image: linear-gradient(to bottom, black 0%, black 80px, transparent 120px);
+    mask-image: linear-gradient(to bottom, black 0%, black 80px, transparent 120px);
     z-index: -1;
 }
 
@@ -58,7 +58,10 @@
     justify-content: center; 
 }
 
-.nav-right { justify-content: flex-end; }
+.nav-right { 
+    justify-content: flex-end;
+    position: relative;
+}
 
 .wordmark-img {
     height: 34px; /* Scaled up ~10% */
@@ -77,12 +80,12 @@
 }
 
 .nav-link {
-    font-family: var(--font-ui);
-    color: white !important; /* Strictly prevents the orange text on hover */
+    font-family: var(--font-ui) !important;
+    font-size: 1.05rem !important;
+    font-weight: 500 !important;
+    letter-spacing: normal !important; /* Prevents unwanted stretching */
     text-decoration: none;
-    font-size: 1.05rem; /* Scaled up ~10% */
-    font-weight: 500;
-    letter-spacing: 0.5px;
+    color: var(--white);
     
     height: 44px; /* Scaled up ~10% */
     padding: 0 22px;
@@ -116,6 +119,12 @@
         inset 0 1px 2px rgba(255, 255, 255, 0.3), 
         inset 0 -1px 2px rgba(0, 0, 0, 0.2), 
         0 4px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Forcefully suppress rogue inline JS shadows on inactive links */
+.nav-link:not(.active):not(:hover) {
+    box-shadow: none !important;
+    background: transparent !important; 
 }
 
 /* =========================================
@@ -165,21 +174,23 @@
     /* The targeted blur & shadow fix */
     padding: 5px 10px; /* Gives the blur some breathing room around the text */
     border-radius: 30px;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(6px);
+    
     /* The 3rd value (4px) controls how blurred the text drop-shadow is */
-    text-shadow: 0 2px 10px rgba(3, 3, 3, 0.3); 
+    text-shadow: 0 2px 4px rgba(3, 3, 3, 0.3); 
 }
 
 .status-label {
-    font-size: 0.8rem;
+    font-size: 1rem;
     color: rgba(255, 255, 255, 0.6);
 }
 
 .status-user {
-    font-size: 0.9rem;
+    font-size: 1.1rem;
     display: flex;
     align-items: center;
+    text-transform: uppercase;
+    font-family: var(--font-valheim);
+    letter-spacing: .06rem;
     gap: 6px;
 }
 
@@ -189,9 +200,12 @@
 }
 
 .status-user .role {
-    color: var(--color-accent-primary, #219BFF);
+    background: linear-gradient(135deg, var(--retro-yellow), var(--retro-orange));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     font-weight: 500;
-    font-size: 0.85rem;
+    font-size: 1rem;
 }
 
 
@@ -201,13 +215,15 @@
 .auth-container[data-logged-in="true"] .user-status-group { display: flex; }
 .auth-container[data-logged-in="true"] .login-btn { display: none; }
 
+
+
 /* =========================================
    3. UNIFIED 3D GLASS STYLE
    ========================================= */
 .glass-3d-btn {
     background: rgba(255, 255, 255, 0.08); 
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     color: white !important; 
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 30px;
@@ -270,6 +286,167 @@
     object-fit: contain;
     display: block; 
 }
+
+
+
+/* =========================================
+   3D GLASS MENUS (Synchronized with Social Buttons)
+   ========================================= */
+.login-menu, 
+.share-menu {
+    position: fixed; 
+    top: calc(var(--header-height) + 15px); 
+    right: clamp(1rem, 3vw, 4vw); 
+    z-index: 9999;
+    width: 280px; 
+    padding: 20px;
+    border-radius: 22px; 
+    
+    /* Transparent container to hold the bulletproof ::before layer */
+    background: transparent; 
+    
+    /* EXACT border and resting insets from social buttons */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 
+        inset 0 1px 2px rgba(255, 255, 255, 0.3), 
+        inset 0 -1px 2px rgba(0, 0, 0, 0.2), 
+        0 8px 24px rgba(0, 0, 0, 0.3); /* Wider drop shadow for floating panel */
+    
+    /* Animation / State */
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.8); 
+    transform-origin: center;
+    
+    /* Exact transition timing from social buttons + opacity/transform for the dropdown bounce */
+    transition: opacity 0.2s ease, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.27), box-shadow 0.15s ease-out, background 0.3s ease !important;
+}
+
+/* 3D Glass Hover: Exact background brightening from social buttons */
+.login-menu:hover,
+.share-menu:hover {
+    background: rgba(255, 255, 255, 0.05) !important; 
+}
+
+/* Bulletproof Blur Layer */
+.login-menu::before,
+.share-menu::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit; 
+    
+    /* EXACT background and blur from social buttons */
+    background: rgba(255, 255, 255, 0.06); 
+    backdrop-filter: blur(3px) !important;
+    -webkit-backdrop-filter: blur(3px) !important;
+    
+    z-index: -1; 
+}
+
+/* The Active Open State */
+.login-menu.is-open,
+.share-menu.is-open {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    transform: scale(1) !important;
+}
+/* Make the opened menu scale up slightly when hovered */
+.login-menu.is-open:hover,
+.share-menu.is-open:hover {
+    transform: scale(1.01) !important;
+}
+
+
+/* =========================================
+   LIGHT PRISM INPUT
+   ========================================= */
+.light-prism-input {
+    width: 100%;
+    padding: 12px 16px;
+    margin-bottom: 12px;
+    box-sizing: border-box;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    outline: none;
+    transition: all 0.2s ease;
+    
+    background: rgba(245, 245, 245, 0.6); 
+    border-top: 1px solid rgba(255, 255, 255, 0.6);
+    border-left: 1px solid rgba(255, 255, 255, 0.4);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.1);
+    color: #1F1F1F;
+    
+    transition: all 0.2s ease; /* Ensures the hover is smooth */
+}
+
+/* Light Prism Hover: Sharpens the white glare and lifts slightly */
+.light-prism-input:hover {
+    background: rgba(255, 255, 255, 0.7);
+    border-top: 1px solid rgba(255, 255, 255, 0.8);
+    border-left: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.6), 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Light Prism Focus (Clicking inside): Maximum illumination */
+.light-prism-input:focus {
+    background: rgba(255, 255, 255, 0.85);
+    border-color: rgba(255, 255, 255, 0.9);
+    box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.9), 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.light-prism-input::placeholder {
+    color: rgba(31, 31, 31, 0.5);
+}
+
+.light-prism-input:focus {
+    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.6), 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* =========================================
+   DARK PRISM BUTTON OVERRIDE (Inline Icon)
+   ========================================= */
+.prism-btn-override.prism {
+    width: 35px; /* Keeps it thin */
+    height: auto; /* Stretches to match the input height automatically */
+    padding: 0; 
+    border-radius: 12px; /* Matches the .light-prism-input radius */
+    
+    /* Perfectly center the icon */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0; /* Prevents the input from squishing it */
+    
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+/* Adjust the icon size inside the new button */
+.prism-btn-override.prism i {
+    font-size: 1.1rem;
+}
+
+/* Dark Prism Hover: Brighter top reflection, deeper drop shadow */
+.prism-btn-override.prism:hover {
+    background: rgba(12, 30, 55, 0.8); /* Pulled slightly brighter */
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+    border-left: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 
+        inset 0 1px 3px rgba(255, 255, 255, 0.25), 
+        0 12px 28px rgba(0, 0, 0, 0.5);
+    transform: translateY(-1px); /* A microscopic physical lift */
+}
+
+.prism-btn-override.prism:active {
+    transform: translateY(1px); /* Pushes down when clicked */
+    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.1), 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
 
 /* =========================================
    4. MOBILE MENU (HIDDEN ON DESKTOP)

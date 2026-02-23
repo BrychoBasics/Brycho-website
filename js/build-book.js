@@ -42,6 +42,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     }, 100);
 });
 
+// Add this near the top of build-book.js
+window.addEventListener('authStateChanged', async () => {
+    await loadImages();
+    applyFilters();
+    
+    // Optional: show your old success toast
+    if (window.isAdminLoggedIn) {
+        showSuccess(`Logged in as ${window.adminUser.name}`);
+        showAdminUI();
+    }
+});
+
 // ========================================
 // DATA LOADING
 // ========================================
@@ -954,143 +966,6 @@ function renderRelatedImages(currentImage) {
     `).join('');
 }
 
-// ========================================
-// PASSWORD / LOGIN SYSTEM
-// ========================================
-
-function togglePasswordPrompt() {
-    const prompt = document.getElementById('passwordPrompt');
-    if (!prompt) return;
-    
-    const isHidden = prompt.classList.contains('hidden');
-    prompt.classList.toggle('hidden', !isHidden);
-    
-    if (!isHidden) {
-        prompt.classList.add('hidden');
-    } else {
-        prompt.classList.remove('hidden');
-        document.getElementById('passwordInput').focus();
-    }
-}
-
-async function checkPassword() {
-    const input = document.getElementById('passwordInput');
-    if (!input || !input.value) return;
-
-    try {
-        const response = await fetch(`${SUPABASE_URL}/functions/v1/verify-login`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-            },
-            body: JSON.stringify({ password: input.value })
-        });
-
-        const data = await response.json();
-
-        if (response.ok && data.user) {
-            isAdminLoggedIn = true;
-            adminUser = data.user;
-            sessionStorage.setItem('admin_user', JSON.stringify(adminUser));
-            sessionStorage.setItem('admin_password', input.value);
-            
-            document.getElementById('passwordPrompt').classList.add('hidden');
-            input.value = '';
-            
-            // Reload to show protected content
-            await loadImages();
-            applyFilters();
-            
-            showAdminUI();
-            showSuccess(`Logged in as ${adminUser.name} (${adminUser.role})`);
-        } else {
-            input.value = '';
-            input.placeholder = 'Incorrect password';
-            setTimeout(() => { input.placeholder = 'Password'; }, 2000);
-        }
-    } catch (error) {
-        console.error('Login error:', error);
-        input.value = '';
-        showError('Login failed');
-    }
-}
-
-function showAdminUI() {
-    console.log('Admin UI enabled', adminUser);
-    
-    // Show header admin info
-    const headerAdmin = document.getElementById('headerAdmin');
-    const userName = document.getElementById('headerUserName');
-    
-    if (headerAdmin && userName) {
-        const roleDisplay = adminUser.role === 'admin' ? 'Admin' : 'Contributor';
-        userName.textContent = `${adminUser.name} (${roleDisplay})`;
-        headerAdmin.style.display = 'flex';
-
-        // Hide login button
-        const loginBtn = document.getElementById('loginBtn');
-        if (loginBtn) loginBtn.style.display = 'none';
-    }
-    
-    // Show upload button
-    const uploadBtnGroup = document.getElementById('uploadBtnGroup');
-    if (uploadBtnGroup) {
-        uploadBtnGroup.style.display = 'block';
-    }
-    
-    // Show manage tags button (admin only)
-    if (adminUser.role === 'admin') {
-        const tagsBtnGroup = document.getElementById('tagsBtnGroup');
-        if (tagsBtnGroup) {
-            tagsBtnGroup.style.display = 'block';
-        }
-    }
-    
-    // Setup button clicks
-    const uploadBtn = document.getElementById('uploadBtn');
-    if (uploadBtn) uploadBtn.onclick = openUploadModal;
-    
-    const tagsBtn = document.getElementById('tagsBtn');
-    if (tagsBtn) tagsBtn.onclick = openTagsModal;
-    
-    // Hide protected checkbox for contributors
-    if (adminUser.role === 'contributor') {
-        const protectedGroup = document.getElementById('uploadProtectedGroup');
-        if (protectedGroup) protectedGroup.style.display = 'none';
-    }
-}
-
-// Logout function
-window.logout = function() {
-    sessionStorage.removeItem('admin_user');
-    sessionStorage.removeItem('admin_password');
-    isAdminLoggedIn = false;
-    adminUser = null;
-    
-    // Hide admin UI
-    const headerAdmin = document.getElementById('headerAdmin');
-    if (headerAdmin) headerAdmin.style.display = 'none';
-
-    // Show login button
-    const loginBtn = document.getElementById('loginBtn');
-    if (loginBtn) loginBtn.style.display = 'flex';
-    
-    // Reload images (hides protected content)
-    loadImages().then(() => applyFilters());
-    
-    showSuccess('Logged out');
-};
-
-// Check for existing session on page load
-function checkExistingSession() {
-    const savedUser = sessionStorage.getItem('admin_user');
-    if (savedUser) {
-        adminUser = JSON.parse(savedUser);
-        isAdminLoggedIn = true;
-        showAdminUI();
-    }
-}
 
 // ========================================
 // INFO BUTTON ANIMATION

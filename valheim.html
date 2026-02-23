@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <meta charset="UTF-8">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -24,57 +25,72 @@
 <body>
 
     <header class="site-header">
-        <div class="header-glass-layer"></div>
+    <div class="header-glass-layer"></div>
     
-        
-        <nav class="header-nav">
-            <div class="nav-left">
-                <button class="hamburger" aria-label="Toggle Menu">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
-                <div class="desktop-links">
-            <a href="index.html" class="nav-link">Home</a>
-            
-            <a href="valheim.html" class="nav-link valheim-link active glass-3d-btn">Valheim</a>
+    <nav class="header-nav">
+        <div class="nav-left">
+            <button class="hamburger" aria-label="Toggle Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <div class="desktop-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="valheim.html" class="nav-link valheim-link active glass-3d-btn">Valheim</a>
+            </div>
         </div>
-            </div>
 
-            <div class="nav-center">
-                <a href="index.html" class="wordmark-link">
-                    <img src="images/Wordmark_small.png" alt="Brycho" class="wordmark-img">
-                </a>
-            </div>
+        <div class="nav-center">
+            <a href="index.html" class="wordmark-link">
+                <img src="images/Wordmark_small.png" alt="Brycho" class="wordmark-img">
+            </a>
+        </div>
 
-            <div class="nav-right desktop-auth">
-                <div class="auth-container" data-logged-in="true">
-                    
-                    <button class="header-btn glass-3d-btn login-btn">
-                        <i class="fas fa-arrow-right-to-bracket"></i> Log In
-                    </button>
+        <div class="nav-right desktop-auth" style="position: relative;">
+            <div class="auth-container" data-logged-in="false">
+                
+                <button class="header-btn glass-3d-btn login-btn" id="login-toggle-btn">
+                    <i class="fas fa-arrow-right-to-bracket"></i> Log In
+                </button>
 
-                    <div class="user-status-group">
-                        <div class="user-status-text">
-                            <span class="status-label">Logged in as</span>
-                            <span class="status-user"><strong class="username">Brycho test test test</strong> <span class="role">(Admin)</span></span>
-                        </div>
-                        
-                        <button class="header-btn glass-3d-btn logout-btn">
-                            <i class="fas fa-arrow-right-from-bracket"></i> Log Out
-                        </button>
+                <div class="user-status-group">
+                    <div class="user-status-text">
+                        <span class="status-label">Logged in as</span>
+                        <span class="status-user"><strong class="username" style="font-weight: 400;"></strong> <span class="role"></span></span>
                     </div>
-
+                    
+                    <button class="header-btn glass-3d-btn logout-btn" id="logout-btn">
+                        <i class="fas fa-arrow-right-from-bracket"></i> Log Out
+                    </button>
                 </div>
 
-                <button class="header-btn glass-3d-btn circle-btn share-btn" aria-label="Share">
-                    <img src="images/icons-svg/share.svg" alt="Share" class="share-icon">
-                </button>
             </div>
-        </nav>
-    </header>
+
+            <button class="header-btn glass-3d-btn circle-btn share-btn" aria-label="Share">
+                <img src="images/icons-svg/share.svg" alt="Share" class="share-icon">
+            </button>
+        </div>
+    </nav>
+</header>
+<div class="login-menu" id="supabase-login-menu">
+    <h2 style="margin-bottom: 10px; text-align: center; font-size: 1.2rem; color: #F5F5F5;">Contributor Login</h2>
     
-    <div class="mobile-menu">
+    <p style="font-size: 0.85rem; color: rgba(255, 255, 255, 0.7); margin-bottom: 15px; text-align: center; line-height: 1.4;">
+        If you'd like to contribute to select pages, let Brycho know via Discord.
+    </p>
+    
+    <div style="display: flex; gap: 8px; align-items: stretch;">
+        <input type="password" id="sb-password" placeholder="Enter Password" class="light-prism-input" style="margin-bottom: 0; flex: 1;">
+        
+        <button id="sb-submit" class="btn-blue" aria-label="Submit" style="width: 48px; flex-shrink: 0;">
+        <i class="fas fa-arrow-right"></i>
+    </button>
+    </div>
+    
+    <p id="sb-error-msg" class="accent" style="display: none; font-size: .9rem; margin-top: 10px; text-align: center; color: var(--retro-orange);"></p>
+</div>
+    
+    <div class="mobile-menu" style="display: none;">
         <a href="index.html">Home</a>
         <a href="valheim.html" class="active">Valheim</a>
         
@@ -95,65 +111,56 @@
     <main id="swup" class="transition-fade">
         <div class="valheim-hero">
         <div class="valheim-content">
-            <h1 class="valheim-title"></h1>
+            <h1 class="valheim-title" style="font-family: var(--font-valheim); letter-spacing: 5px; font-weight: 700;">VALHEIM PAGES</h1>
             
             <div class="project-cards">
-                <a href="#" data-no-swup class="project-card disabled" onclick="return false;">
-                    <div class="status-badge coming-soon"></div>
+                <a href="#" class="prism dark-prism disabled" onclick="return false;">
+                    <div class="status-badge beta"></div>
                     <i class="fas fa-book"></i>
-                    <h2>Brycho's Build Book</h2>
-                    <p>Level up your builds</p>
+                    <h2 style="font-family: var(--font-valheim2); font-size: 35px;">Brycho's Build Book</h2>
+                    <p>Plan your next build</p>
                 </a>
                 
-                <a href="#" data-no-swup class="project-card disabled" onclick="return false;">
+                <a href="#" data-no-swup class="prism dark-prism prism-blur disabled" onclick="return false;">
                     <div class="status-badge coming-soon"></div>
                     <i class="fas fa-sign"></i>
-                    <h2>The Sign Center</h2>
-                    <p>Signs go brr</p>
+                    <h2 style="font-family: var(--font-valheim); font-weight: 400; font-size: 2.1rem;">THE SIGN CENTER</h2>
+                    <p>Make signs easier than ever before</p>
                 </a>
                 
-                <a href="#" data-no-swup class="project-card disabled" onclick="return false;">
+                <a href="#" data-no-swup class="prism dark-prism prism-blur disabled" onclick="return false;">
                     <div class="status-badge coming-soon"></div>
                     <i class="fas fa-crosshairs"></i>
-                    <h2>Centering Guide</h2>
+                    <h2 style="font-family: var(--font-valheim); font-weight: 400; font-size: 2.1rem;">CENTERING GUIDE</h2>
                     <p>Circles go brr</p>
                 </a>
+        
+            </div>
 
-                <a href="#" class="project-card card-light">
+
+
+            <div class="extra-style-tests" style="display: none;">
+                    <a href="#" class="prism light-prism">
                     <i class="fas fa-book"></i>
-                    <h2>Light UI</h2>
-                    <p>Clean white, dark text, retro blue accent.</p>
+                    <h2>Light Prism</h2>
+                    <p>White & glassy, but no blur</p>
                 </a>
                 
-                <a href="#" class="project-card card-charcoal">
+                <a href="#" class="prism dark-prism">
                     <i class="fas fa-sign"></i>
-                    <h2>Charcoal</h2>
-                    <p>Rich dark background, high contrast.</p>
+                    <h2>Dark Prism</h2>
+                    <p>Dark & glassy, but no blur</p>
                 </a>
                 
-                <a href="#" class="project-card card-prism">
-                    <i class="fas fa-gem"></i>
-                    <h2>Prism Glass</h2>
-                    <p>Dark glass refracting the retro spectrum.</p>
+    
+
+                <a href="#" class="prism light-prism prism-blur">
+                    <i class="fas fa-book"></i>
+                    <h2>Light Prism</h2>
+                    <p>White & glassy, with blur</p>
                 </a>
 
-                <a href="#" class="project-card card-glass">
-                    <i class="fas fa-crosshairs"></i>
-                    <h2>Pure Glass</h2>
-                    <p>Standard frosted UI across the board.</p>
-                </a>
 
-                <a href="#" class="project-card card-retro-stripes">
-                    <i class="fas fa-crosshairs"></i>
-                    <h2>Glass Retro</h2>
-                    <p>Standard frosted UI across the board.</p>
-                </a>
-
-                <a href="#" class="project-card card-prism card-striped">
-                    <i class="fas fa-gem"></i>
-                    <h2>Prism Retro</h2>
-                    <p>Dark glass refracting the retro spectrum.</p>
-                </a>
             </div>
         </div>
         </div>
@@ -178,6 +185,7 @@
         <div class="custom-scroll-thumb"></div>
     </div>
 
+    <script src="js/auth.js"></script>
     <script src="https://unpkg.com/swup@4"></script>
     <script src="js/navigation.js"></script>
 </body>

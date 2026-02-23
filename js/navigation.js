@@ -77,53 +77,55 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-    const glassBtns = document.querySelectorAll('.glass-3d-btn');
+    const reactiveElements = document.querySelectorAll('.glass-3d-btn, .login-menu, .share-menu');
 
-    glassBtns.forEach(btn => {
-        // We no longer kill the transition on mouseenter.
-        // It uses the CSS 0.15s ease-out to smoothly catch up to the cursor.
-
-        btn.addEventListener('mousemove', (e) => {
-            const rect = btn.getBoundingClientRect();
+    reactiveElements.forEach(el => {
+        el.addEventListener('mousemove', (e) => {
+            const rect = el.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
             
             const centerX = rect.width / 2;
             const centerY = rect.height / 2;
             
+            // 1. Calculate the raw distance
             const offsetX = x - centerX;
             const offsetY = y - centerY;
 
-            const shadowX = offsetX / 12; 
-            const shadowY = offsetY / 6;
-            const insetX = offsetX / 35;
-            const insetY = offsetY / 15;
+            // 2. Normalize the distance (returns a value between -1 and 1)
+            // This ensures a giant menu and a tiny button return the exact same ratios
+            const normalizedX = offsetX / centerX;
+            const normalizedY = offsetY / centerY;
 
-            // Apply dynamic shadow (CSS handles the smoothing)
-            btn.style.boxShadow = `
+            // 3. Apply the EXACT absolute pixel limits from your 48px social buttons
+            // This locks the white glare to a maximum of ~0.7px thick, regardless of element size
+            const insetX = normalizedX * 0.7; 
+            const insetY = normalizedY * 1.5; 
+            const shadowX = normalizedX * 2;
+            const shadowY = normalizedY * 4;
+
+            const isMenu = el.classList.contains('login-menu') || el.classList.contains('share-menu');
+            const dropShadow = isMenu 
+                ? `${shadowX}px ${shadowY + 8}px 24px rgba(0, 0, 0, 0.4)` 
+                : `${shadowX}px ${shadowY + 4}px 8px rgba(0, 0, 0, 0.2)`; 
+
+            el.style.boxShadow = `
                 inset ${insetX}px ${insetY + 1}px 3px rgba(255, 255, 255, 0.4),
                 inset ${-insetX}px ${-insetY - 1}px 3px rgba(0, 0, 0, 0.2),
-                ${shadowX}px ${shadowY + 4}px 8px rgba(0, 0, 0, 0.2)
+                ${dropShadow}
             `;
         });
 
-        btn.addEventListener('mouseleave', () => {
-            // Keep the background and transform transitions intact while updating the shadow speed
-            btn.style.transition = 'box-shadow 0.6s ease, background 0.4s ease, transform 0.2s ease';
-            
-            btn.style.boxShadow = `
-                inset 0 1px 2px rgba(255, 255, 255, 0.3), 
-                inset 0 -1px 2px rgba(0, 0, 0, 0.2), 
-                0 4px 6px rgba(0, 0, 0, 0.15)
-            `;
+        el.addEventListener('mouseleave', () => {
+            el.style.transition = 'box-shadow 0.6s ease, background 0.4s ease, transform 0.2s ease';
+            el.style.boxShadow = '';
             
             setTimeout(() => {
-                btn.style.transition = 'box-shadow 0.15s ease-out, transform 0.2s ease, background 0.3s ease';
+                el.style.transition = 'box-shadow 0.15s ease-out, transform 0.2s ease, background 0.3s ease';
             }, 600);
         });
     });
 });
-
 
 
 
@@ -219,3 +221,4 @@ if (thumb && scrollbar) {
 window.addEventListener('scroll', updateCustomScrollbar);
 window.addEventListener('resize', updateCustomScrollbar);
 updateCustomScrollbar(); // Run on initial load
+
