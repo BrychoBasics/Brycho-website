@@ -104,7 +104,9 @@ main {
     flex: 1;
     display: flex;
     flex-direction: column;
+    
 }
+
 
 
 
@@ -262,6 +264,90 @@ body.is-dragging-scrollbar {
         transform: translateY(0);
     }
 }
+
+
+/* =========================================
+   3. UNIFIED 3D GLASS STYLE
+   ========================================= */
+.glass-3d-btn {
+    background: rgba(255, 255, 255, 0.08); 
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: white !important; 
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    height: 44px; /* Scaled up ~10% */
+    box-sizing: border-box;
+    flex-shrink: 0;
+    
+    box-shadow: 
+        inset 0 1px 2px rgba(255, 255, 255, 0.3), 
+        inset 0 -1px 2px rgba(0, 0, 0, 0.2), 
+        0 4px 6px rgba(0, 0, 0, 0.15);
+        
+
+    transition: box-shadow 0.15s ease-out, transform 0.2s ease, background 0.3s ease;
+}
+
+/* Turn buttons a bit whiter on hover */
+.glass-3d-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: scale(1.02);
+}
+
+.glass-3d-btn:active {
+    transform: scale(0.97);   
+}
+
+
+
+
+
+
+
+
+
+/* ============================================================================
+   ==================       THEMES AND COLOR COMBOS       =====================
+   ============================================================================ */
+
+
+/* =========================================
+   UNIVERSAL CIRCULAR BUTTON MODIFIER
+   ========================================= */
+/* Add this class to any glass button to automatically fix its shape and physics */
+.glass-3d-btn.circle-btn {
+    border-radius: 50% !important; 
+    padding: 0; 
+    aspect-ratio: 1 / 1; /* Guarantees it stays perfectly round regardless of width */
+}
+
+/* Overrides the base physics for small circular elements */
+.glass-3d-btn.circle-btn:hover {
+    transform: scale(1.08); 
+}
+
+.glass-3d-btn.circle-btn:active {
+    transform: scale(0.90);
+}
+
+.login-btn, .logout-btn {
+    padding: 0 22px;
+    gap: 8px;
+    font-size: 1.05rem; /* Scaled up */
+    font-weight: 500;
+}
+
+.share-icon {
+    width: 20px; /* Scaled up */
+    height: 20px;
+    object-fit: contain;
+    display: block; 
+}
 /* =========================================
    UTILITY BUTTONS
    ========================================= */
@@ -366,9 +452,6 @@ body.is-dragging-scrollbar {
         display: none;
     }
     
-    .hamburger {
-        display: flex;
-    }
     
     .logo {
         left: 50%;
@@ -541,54 +624,47 @@ body.is-dragging-scrollbar {
     transform: translateY(-2px);
 }
 
-/* --- MOBILE TOGGLES --- */
-.hamburger {
-    display: none; /* Hidden on desktop */
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0.5rem;
-}
-
-/* Adjust hamburger span lines as needed for your design */
-.hamburger span {
-    display: block;
-    width: 25px;
-    height: 2px;
-    background-color: white;
-    margin: 5px 0;
-    transition: 0.3s;
-}
-
-@media (max-width: 768px) {
-    .desktop-links {
-        display: none;
-    }
-    .hamburger {
-        display: block;
-    }
-}
 
 
 
 
+/* =========================================
+   FOOTER & SOCIAL ICONS
+   ========================================= */
 
-/* --- SOCIAL FOOTER --- */
+/* The container for the rest of your future footer content */
 .site-footer {
-    padding: 50px 40px 30px; /* Increased bottom padding to 30px */
-    margin-top: auto; /* Forces it to the absolute bottom of the flex column */
-    display: flex;
-    justify-content: center;
+    padding: 20px 20px 100px 20px; /* 100px bottom padding so text isn't covered by icons */
+    text-align: center;
     position: relative;
-    z-index: 10;
+    z-index: 10; /* Stays BEHIND the mobile menu */
 }
 
+/* Ripped out of the flow and pinned to the glass */
 .social-links {
+    position: fixed;
+    bottom: 30px; /* Hovers 30px from the bottom of your screen */
+    left: 0;
+    width: 100%;
     display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
     justify-content: center;
+    gap: 16px;
+    pointer-events: auto;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    z-index: 9998 !important;
 }
+
+/* Ensure the main page content can be scrolled cleanly above the floating icons */
+main {
+    padding-bottom: 80px; 
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+
+
+
+
+
 
 /* Chaining the classes increases specificity, protecting it from header.css */
 .glass-3d-btn.social-btn {

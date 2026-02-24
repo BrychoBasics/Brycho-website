@@ -1,59 +1,133 @@
-/* =========================================
-   VALHEIM LAYOUT
-   ========================================= */
-
-.valheim-hero {
-    /* Allow the flex body to naturally handle the height without overflowing */
-    flex: 1; 
+.valheim-content {
+    height: 69vh;
     display: flex;
-    align-items: center;
-    justify-content: center;
     text-align: center;
-    
-    /* Replaced dead variables with solid pixel padding */
-    padding: 60px 20px; 
-    
-    /* Ensure it clears your fixed header */
-    margin-top: var(--header-height); 
+    justify-content: flex-start;
+    flex-direction: column;
+    padding-top: 31vh;
+    gap: 20px;
 }
 
-.valheim-content {
-    /* Gives the 3 cards plenty of breathing room to sit side-by-side */
-    max-width: 1100px; 
-    width: 100%;
-    margin: 0 auto;
+@media (max-width: 850px) {
+    .valheim-content {
+        padding-top: 22vh;
+    }
 }
 
 .valheim-title {
-    font-size: clamp(3rem, 8vw, 5rem); /* Makes headline dynamically scale on smaller screens */
-    margin-bottom: 40px; 
-    animation: fadeInUp 0.8s ease;
+    font-family: var(--font-valheim);
+    font-size: clamp(4.5rem, 10vw, 6.5rem);
+    line-height: 6.5rem;
+    letter-spacing: 5px;
+    font-weight: 700;
+    white-space: nowrap;
+    padding: 0px;
+    
+}
+@media (max-width: 700px) {
+    .valheim-title {
+        white-space: normal; 
+        font-size: 18vw;
+        line-height: 18vw;
+         
+    }
+
+    .valheim-content {
+        padding-top: 14vh;
+    }
 }
 
-.project-cards {
-    display: grid;
-    /* Smart scaling: defaults to a flexible minimum width */
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 30px; 
-    justify-content: center;
-    animation: fadeInUp 1.2s ease;
-}
-
-/* Force exactly 3 columns on desktop/tablets so they don't awkwardly wrap */
-@media (min-width: 900px) {
-    .project-cards {
-        grid-template-columns: repeat(3, 1fr);
+@media (max-width: 570px) {
+    .valheim-content {
+        padding-top: 8vh;
+        height: 88vh;
     }
 }
 
 
+
+/* =========================================
+   THE GRID 
+   ========================================= */
+.card-array {
+    width: 100%; /* Forces the grid to expand so cards have room to sit side-by-side */
+    padding: 20px !important;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap; 
+    gap: 30px;
+    max-width: 1200px; 
+    margin: 0 auto;
+}
+
+
+/* =========================================
+   THE CARDS (Dynamic Aspect Ratio & Sizing)
+   ========================================= */
+.card-array .prism {
+    position: relative; /* Essential for status-badge positioning */
+    transition: transform 0.3s ease;
+}
+
+.card-array .prism:hover {
+    transform: translateY(-5px);
+}
+
+
+
+/* =========================================
+   Valheim Project Cards (individuals)
+   ========================================= */
+.valheim-card {
+    container-type: size;
+    padding: 0px !important;
+    aspect-ratio: 3 / 2;
+    margin: 0; 
+    
+    /* Let the flex math do the sizing instead of forcing a width */
+    flex: 1 1 250px; 
+    max-width: 300px; 
+    
+    /* A small fallback so the container query never accidentally collapses to 0 */
+    min-height: 150px; 
+}
+
+.card-array .prism i {
+    font-size: 25cqh !important;
+    margin-bottom: 5cqh !important;
+}
+
+.card-title {
+    font-family: var(--font-valheim);
+    font-weight: 400;
+    font-size: 16cqh !important;
+    padding: 0px !important;
+    white-space: nowrap; 
+    overflow: hidden;
+
+    margin: 0cqh 0 0cqh 0;
+    text-align: center !important;
+}
+
+.card-array .prism p {
+    font-size: 8cqh !important;
+    padding: 0px !important;
+    margin: 0;
+    white-space: nowrap;
+}
+
+
+
+/* =========================================
+   STATUS BADGE (Anti-Clipping)
+   ========================================= */
 /* Status Badge */
 .status-badge {
     position: absolute;
-    top: -10px;
-    right: -10px;
-    width: 100px;
-    height: 100px;
+    top: -5cqh;
+    right: -5cqh;
+    width: 50cqh;
+    height: 50cqh;
     background-size: contain;
     background-repeat: no-repeat;
     transform: rotate(12deg);
@@ -69,18 +143,18 @@
     background-image: url('../images/paper-graphics/comingsoon.webp');
 }
 
-
-
-@media (max-width: 768px) {
-    .valheim-title {
-        font-size: 3rem;
-    }
-    
-    .valheim-subtitle {
-        font-size: 1.125rem;
-    }
-    
+/* =========================================
+   MEDIA QUERIES (Mobile Refinement)
+   ========================================= */
+@media (max-width: 600px) {
     .project-cards {
-        grid-template-columns: 1fr;
+        padding: 0 20px;
+    }
+    
+    .project-cards .prism {
+        max-width: 100%; /* Allows cards to take full width on small phones */
+        aspect-ratio: 16 / 9;
     }
 }
+
+

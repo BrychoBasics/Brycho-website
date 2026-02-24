@@ -8,44 +8,69 @@ swup.hooks.on('visit:start', (visit) => {
 });
 
 
-// Tell the header to update the active link after every page transition
-swup.hooks.on('page:view', () => {
-    // Get the current URL path (e.g., '/valheim.html' or '/')
-    const currentPath = window.location.pathname;
+// ========================================
+// UNIFIED ROUTING & ACTIVE LINKS
+// ========================================
+
+// 1. Master function to update active states for ALL links
+function updateActiveLinks() {
+    const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+    const allNavLinks = document.querySelectorAll('.nav-link');
     
-    // Select all your desktop navigation links
-    const navLinks = document.querySelectorAll('.desktop-links .nav-link');
-    
-    navLinks.forEach(link => {
-        // 1. Remove the active classes from ALL links
+    allNavLinks.forEach(link => {
+        // Remove active state and inline styles
         link.classList.remove('active', 'glass-3d-btn');
-        
-        // 2. Wipe out any inline box-shadows left behind by the hover script
         link.removeAttribute('style'); 
         
-        // 3. Look at where this specific link is trying to go
         const linkHref = link.getAttribute('href');
         
-        if (currentPath.endsWith(linkHref) || (currentPath.endsWith('/') && linkHref === 'index.html')) {
+        // If it's a match, apply active styling
+        if (linkHref === currentPath || (window.location.pathname === '/' && linkHref === 'index.html')) {
             link.classList.add('active', 'glass-3d-btn');
         }
-
-        
     });
+}
 
-    // Force the scrollbar to recalculate its size for the new page
+// 2. Run on initial page load
+document.addEventListener('DOMContentLoaded', () => {
+    updateActiveLinks();
+    
+    // Wire up the new mobile buttons to the desktop menus
+    const mobileLoginBtn = document.getElementById('mobile-login-toggle-btn');
+    const mobileShareBtn = document.getElementById('mobile-share-btn');
+    const loginMenu = document.querySelector('.login-menu');
+    const shareMenu = document.querySelector('.share-menu');
+
+    if (mobileLoginBtn && loginMenu) {
+        mobileLoginBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            loginMenu.classList.toggle('is-open');
+            if (shareMenu) shareMenu.classList.remove('is-open'); // Close share if open
+        });
+    }
+
+    if (mobileShareBtn && shareMenu) {
+        mobileShareBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            shareMenu.classList.toggle('is-open');
+            if (loginMenu) loginMenu.classList.remove('is-open'); // Close login if open
+        });
+    }
+});
+
+// 3. Run after every Swup page transition
+swup.hooks.on('page:view', () => {
+    updateActiveLinks();
     updateCustomScrollbar();
-
+    
     if (window.syncBackgroundScroll) {
         window.syncBackgroundScroll();
     }
-    
 });
 
 
-
 // ========================================
-// NAVIGATION SYSTEM
+// MOBILE MENU TOGGLE
 // ========================================
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -54,27 +79,27 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (hamburger && mobileMenu) {
         hamburger.addEventListener('click', () => {
-            hamburger.classList.toggle('active');
-            mobileMenu.classList.toggle('active');
-            
-            // Prevent body scroll when menu is open
-            if (mobileMenu.classList.contains('active')) {
-                document.body.style.overflow = 'hidden';
-            } else {
-                document.body.style.overflow = '';
-            }
+            hamburger.classList.toggle('is-active');
+            mobileMenu.classList.toggle('is-open');
+            document.body.classList.toggle('mobile-menu-open'); 
         });
-        
-        // Close menu when clicking a link
-        mobileMenu.querySelectorAll('a').forEach(link => {
+
+        // Safe inside the 'if' block!
+        const mobileNavLinks = document.querySelectorAll('.mobile-menu .nav-link');
+        mobileNavLinks.forEach(link => {
             link.addEventListener('click', () => {
-                hamburger.classList.remove('active');
-                mobileMenu.classList.remove('active');
-                document.body.style.overflow = '';
+                mobileMenu.classList.remove('is-open');
+                hamburger.classList.remove('is-active');
+                document.body.classList.remove('mobile-menu-open');
             });
         });
     }
 });
+
+
+// ========================================
+// NAVIGATION SYSTEM
+// ========================================
 
 document.addEventListener('DOMContentLoaded', () => {
     const reactiveElements = document.querySelectorAll('.glass-3d-btn, .login-menu, .share-menu');

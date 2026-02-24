@@ -8,6 +8,7 @@
     <title>Brycho's Valheim Projects</title>
     
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link href="https://fonts.googleapis.com/css2?family=Caesar+Dressing&display=swap" rel="stylesheet">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -56,7 +57,7 @@
                 <div class="user-status-group">
                     <div class="user-status-text">
                         <span class="status-label">Logged in as</span>
-                        <span class="status-user"><strong class="username" style="font-weight: 400;"></strong> <span class="role"></span></span>
+                        <span class="status-user"><strong class="username" style="font-weight: 400 !important;"></strong> <span class="role"></span></span>
                     </div>
                     
                     <button class="header-btn glass-3d-btn logout-btn" id="logout-btn">
@@ -89,57 +90,100 @@
     
     <p id="sb-error-msg" class="accent" style="display: none; font-size: .9rem; margin-top: 10px; text-align: center; color: var(--retro-orange);"></p>
 </div>
+
+<div class="share-menu" id="desktop-share-menu">
+    <h2 style="margin-bottom: 10px; text-align: center; font-size: 1.2rem; color: #F5F5F5;">Sharing</h2>
     
-    <div class="mobile-menu" style="display: none;">
-        <a href="index.html">Home</a>
-        <a href="valheim.html" class="active">Valheim</a>
+    <p style="font-size: 0.85rem; color: rgba(255, 255, 255, 0.7); margin-bottom: 15px; text-align: center; line-height: 1.4;">
+        Sharing functionality coming soon!
+    </p>
+    
+    <p style="color: var(--text-muted); font-size: 1.5rem; text-align: center; margin: 0; line-height: 0.8;">...</p>
+    
+</div>
+
+
+
+    
+    <div class="mobile-menu">
+    <a href="index.html" class="nav-link">Home</a>
+    <a href="valheim.html" class="nav-link valheim-link active glass-3d-btn">Valheim</a>
+    
+    <div class="mobile-divider"></div>
+    
+    <div class="auth-container" id="mobile-auth-container" data-logged-in="false">
         
-        <div class="mobile-divider"></div>
-        
-        <div class="mobile-auth-container" data-logged-in="false">
-            <a href="#" class="mobile-action-link login-link"><i class="fas fa-arrow-right-to-bracket"></i> Log In</a>
-            
-            <div class="mobile-user-status-group">
-                <span class="mobile-user-text">Logged in as <strong>Brycho</strong> (Admin)</span>
-                <a href="#" class="mobile-action-link logout-link"><i class="fas fa-arrow-right-from-bracket"></i> Log Out</a>
+        <button class="header-btn glass-3d-btn login-btn" id="mobile-login-toggle-btn">
+            <i class="fas fa-arrow-right-to-bracket"></i> Log In
+        </button>
+
+        <div class="user-status-group" id="mobile-user-status-group">
+            <div class="user-status-text">
+                <span class="status-label">Logged in as</span>
+                <span class="status-user"><strong class="username" style="font-weight: 400 !important;"></strong> <span class="role"></span></span>
             </div>
+            
+            <button class="header-btn glass-3d-btn logout-btn" id="mobile-logout-btn">
+                <i class="fas fa-arrow-right-from-bracket"></i> Log Out
+            </button>
         </div>
-        
-        <a href="#" class="mobile-action-link share-link"><i class="fas fa-share-nodes"></i> Share Board</a>
+
     </div>
 
+    <button class="header-btn glass-3d-btn login-btn" id="mobile-share-btn" aria-label="Share">
+        <img src="images/icons-svg/share.svg" alt="Share" class="share-icon">
+        Share
+    </button>
+</div>
+
+<div class="share-menu">
+    <h3 style="margin-bottom: 15px; font-size: 1.1rem; color: var(--white);">Sharing functionality coming soon!</h3>
+    <p style="color: var(--text-muted); font-size: 1.5rem; text-align: center; line-height: 0.8;">...</p>
+    <p style="color: var(--text-muted); font-size: 1.5rem; text-align: center; line-height: 0.8;">...</p>
+    <p style="color: var(--text-muted); font-size: 1.5rem; text-align: center; line-height: 0.8;">...</p>
+    <p style="color: var(--text-muted); font-size: 1.5rem; text-align: center; line-height: 0.8;">...</p>
+    <p style="color: var(--text-muted); font-size: 1.5rem; text-align: center; line-height: 0.8;">...</p>
+</div>
+
+
+
+
+
+
+
+
+
     <main id="swup" class="transition-fade">
-        <div class="valheim-hero">
         <div class="valheim-content">
-            <h1 class="valheim-title" style="font-family: var(--font-valheim); letter-spacing: 5px; font-weight: 700;">VALHEIM PAGES</h1>
-            
-            <div class="project-cards">
-                <a href="#" class="prism dark-prism disabled" onclick="return false;">
+            <h1 class="valheim-title">VALHEIM RESOURCES</h1>
+            <div class="card-array">
+                <a href="#" class="valheim-card prism dark-prism prism-blur disabled" onclick="return false;">
                     <div class="status-badge beta"></div>
                     <i class="fas fa-book"></i>
-                    <h2 style="font-family: var(--font-valheim2); font-size: 35px;">Brycho's Build Book</h2>
+                    <h2 class="card-title">BRYCHO'S BUILD BOOK</h2>
                     <p>Plan your next build</p>
                 </a>
                 
-                <a href="#" data-no-swup class="prism dark-prism prism-blur disabled" onclick="return false;">
+                <a href="#" data-no-swup class="valheim-card prism dark-prism prism-blur disabled" onclick="return false;">
                     <div class="status-badge coming-soon"></div>
                     <i class="fas fa-sign"></i>
-                    <h2 style="font-family: var(--font-valheim); font-weight: 400; font-size: 2.1rem;">THE SIGN CENTER</h2>
-                    <p>Make signs easier than ever before</p>
+                    <h2 class="card-title">THE SIGN CENTER</h2>
+                    <p>Level up your signage</p>
                 </a>
                 
-                <a href="#" data-no-swup class="prism dark-prism prism-blur disabled" onclick="return false;">
+                <a href="#" data-no-swup class="valheim-card prism dark-prism prism-blur disabled" onclick="return false;">
                     <div class="status-badge coming-soon"></div>
                     <i class="fas fa-crosshairs"></i>
-                    <h2 style="font-family: var(--font-valheim); font-weight: 400; font-size: 2.1rem;">CENTERING GUIDE</h2>
-                    <p>Circles go brr</p>
+                    <h2 class="card-title">CENTERING GUIDE</h2>
+                    <p>Build circles better</p>
                 </a>
         
             </div>
 
 
+        </div>
 
-            <div class="extra-style-tests" style="display: none;">
+        <div class="extra-style-tests" style="display: none;">
                     <a href="#" class="prism light-prism">
                     <i class="fas fa-book"></i>
                     <h2>Light Prism</h2>
@@ -151,8 +195,6 @@
                     <h2>Dark Prism</h2>
                     <p>Dark & glassy, but no blur</p>
                 </a>
-                
-    
 
                 <a href="#" class="prism light-prism prism-blur">
                     <i class="fas fa-book"></i>
@@ -162,8 +204,7 @@
 
 
             </div>
-        </div>
-        </div>
+
     </main>
 
 
