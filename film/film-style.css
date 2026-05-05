@@ -1,0 +1,246 @@
+/* --- Global & Resets --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    cursor: none; /* Hides default cursor */
+    background-color: #f3f2ed; /* Eggshell */
+    color: #111;
+    font-family: sans-serif;
+    overflow: hidden; /* Hide main body scrollbar to force snap-container scrolling */
+}
+
+/* --- Custom Cursor & Fade Logic --- */
+#af-cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 50px;
+    height: 50px;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+}
+#af-cursor::before { /* Center dot */
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 4px; height: 4px;
+    background: white;
+    transform: translate(-50%, -50%);
+}
+
+.fade-ui {
+    transition: opacity 0.2s ease, filter 0.2s ease;
+    opacity: 1;
+    filter: blur(0px);
+}
+.fade-ui.idle {
+    transition: opacity 2s ease, filter 2s ease;
+    opacity: 0;
+    filter: blur(8px);
+}
+
+/* --- Scroll Snapping Architecture --- */
+.scroll-container {
+    height: 100vh;
+    overflow-y: scroll;
+    scroll-snap-type: y proximity;
+}
+.snap-section {
+    height: 100vh;
+    width: 100vw;
+    scroll-snap-align: center;
+    position: relative;
+}
+
+/* --- Hero Section & Viewfinder --- */
+.hero-section {
+    background: #000;
+}
+.bg-video, .reel-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.viewfinder-grid {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+    pointer-events: none;
+}
+.viewfinder-grid > div:not(.corner, .rec-indicator) {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.rec-indicator {
+    position: absolute;
+    top: 40px; right: 40px;
+    color: red;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+.red-dot {
+    display: inline-block;
+    width: 12px; height: 12px;
+    background: red;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+.hero-text {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 3rem;
+}
+
+/* --- Work Section (Filmstrip) --- */
+.work-section {
+    display: grid;
+    grid-template-columns: 25% 75%;
+    background: #f3f2ed;
+}
+.filmstrip-container {
+    background: #111; /* The dark plastic of the film */
+    padding: 20px 50px; /* 50px padding gives room for the sprocket holes */
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    position: relative;
+    overflow-y: auto;
+}
+
+/* Creating the sprocket holes */
+.filmstrip-container::before,
+.filmstrip-container::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 20px; /* Width of the holes */
+    /* This creates the repeating rectangles. Adjust the '35px' to change spacing */
+    background-image: linear-gradient(to bottom, transparent 10px, #f3f2ed 10px, #f3f2ed 25px, transparent 25px);
+    background-size: 100% 35px;
+    z-index: 2; /* Ensures they sit above the background */
+}
+
+.filmstrip-container::before { left: 15px; } /* Left column of holes */
+.filmstrip-container::after { right: 15px; } /* Right column of holes */
+.film-project-card {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 3 / 2; /* Maintained standard */
+    background: #333;
+    cursor: none;
+    overflow: hidden;
+}
+.thumbnail-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.expand-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 2rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.film-project-card:hover .expand-overlay {
+    opacity: 1;
+}
+.work-details {
+    padding: 60px;
+}
+
+/* --- Gallery Grid --- */
+.photo-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+    padding: 40px;
+}
+.gallery-img {
+    background: #ccc;
+    aspect-ratio: 1 / 1;
+}
+.gallery-img.landscape {
+    grid-column: span 2;
+    aspect-ratio: 2 / 1;
+}
+
+.cta-primary {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10vh 20px;
+    background-color: #f3f2ed;
+    text-align: center;
+}
+
+.cta-title {
+    font-size: clamp(2rem, 5vw, 4rem); /* Scales beautifully on all screens */
+    margin-bottom: 2rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+}
+
+.cta-links {
+    display: flex;
+    gap: 2rem;
+}
+
+.cta-links a {
+    color: #111;
+    text-decoration: none;
+    font-size: 1.2rem;
+    font-weight: 600;
+    position: relative;
+    padding-bottom: 5px;
+}
+
+/* Cool underline hover effect for the links */
+.cta-links a::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 0%;
+    height: 2px;
+    background: #111;
+    transition: width 0.3s ease;
+}
+
+.cta-links a:hover::after {
+    width: 100%;
+}
+
+/* --- Hide Scrollbars --- */
+
+/* Hide for Chrome, Safari and Opera */
+.scroll-container::-webkit-scrollbar {
+    display: none;
+}
+
+/* Hide for IE, Edge and Firefox */
+.scroll-container {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+/* Safety net to absolutely prevent horizontal scrolling/wobble */
+body, .scroll-container {
+    overflow-x: hidden;
+}

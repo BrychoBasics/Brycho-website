@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bryce | Film Portfolio</title>
+    <link rel="stylesheet" href="film-style.css">
+</head>
+<body>
+
+    <div id="af-cursor" class="fade-ui"></div>
+
+    <main class="scroll-container">
+
+        <section class="snap-section hero-section">
+            <video class="bg-video" autoplay loop muted playsinline>
+                <source src="assets/meet-me.mp4" type="video/mp4">
+            </video>
+            
+            <div class="viewfinder-grid fade-ui">
+                <div class="rec-indicator">
+                    <span class="red-dot"></span> REC
+                </div>
+                <div class="corner top-left"></div>
+                <div class="corner top-right"></div>
+                <div class="corner bottom-left"></div>
+                <div class="corner bottom-right"></div>
+            </div>
+        </section>
+
+        <section class="snap-section reel-section">
+            <video class="reel-video" autoplay loop muted playsinline controls>
+    <source src="assets/reel.mp4" type="video/mp4">
+</video>
+            </section>
+
+        <section class="snap-section work-section">
+            <div class="filmstrip-container">
+                <div class="film-project-card" data-title="Project One" data-roles="Director, Writer, Producer, Cinematographer, Actor">
+                    <img src="assets/cambike.jpg" alt="Project 1" class="thumbnail-img">
+                    <div class="expand-overlay">
+                        <span class="expand-icon">⛶</span> </div>
+                </div>
+                <div class="film-project-card" data-title="Project Two" data-roles="Director, DP">
+                    <img src="assets/thumb1.jpg" alt="Project 2" class="thumbnail-img">
+                    <div class="expand-overlay">
+                        <span class="expand-icon">⛶</span> </div>
+                </div>
+                <div class="film-project-card" data-title="Project Three" data-roles="Director, DP">
+                    <img src="assets/thumb1.jpg" alt="Project 3" class="thumbnail-img">
+                    <div class="expand-overlay">
+                        <span class="expand-icon">⛶</span> </div>
+                </div>
+                </div>
+            
+            <div class="work-details">
+                <h2>My Work</h2>
+                <h3 id="dynamic-title">Hover over a project</h3>
+                <p id="dynamic-roles"></p>
+                <p id="dynamic-desc"></p>
+            </div>
+        </section>
+
+        <section class="snap-section footer-section">
+            <div class="cta-primary">
+    <h2 class="cta-title">Let's make something together.</h2>
+    <div class="cta-links">
+        <a href="mailto:your@email.com">Email</a>
+        <a href="https://instagram.com/yourhandle">Instagram</a>
+        <a href="#">LinkedIn</a>
+    </div>
+</div>
+            <div class="cta-secondary">
+                <a href="/">Visit my main page to see what other interests are keeping me busy ➔</a>
+            </div>
+            
+            <div class="photo-gallery">
+                <div class="gallery-img standard"></div>
+                <div class="gallery-img landscape"></div>
+                </div>
+        </section>
+
+    </main>
+
+    <script src="film-script.js"></script>
+</body>
+</html>
