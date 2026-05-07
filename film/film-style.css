@@ -11,6 +11,7 @@ body {
     color: #111;
     font-family: sans-serif;
     overflow: hidden; /* Hide main body scrollbar to force snap-container scrolling */
+    overflow-x: hidden; /* Safety net to absolutely prevent horizontal scrolling/wobble */
 }
 
 /* --- Custom Cursor & Fade Logic --- */
@@ -18,22 +19,41 @@ body {
     position: fixed;
     top: 0;
     left: 0;
-    width: 50px;
-    height: 50px;
-    border: 1px solid rgba(255, 255, 255, 0.8);
+    width: 30px; /* Smaller size */
+    height: 30px;
+    border: 1px solid white;
     pointer-events: none;
-    z-index: 9999;
+    z-index: 20000;
     transform: translate(-50%, -50%);
-}
-#af-cursor::before { /* Center dot */
-    content: '';
-    position: absolute;
-    top: 50%; left: 50%;
-    width: 4px; height: 4px;
-    background: white;
-    transform: translate(-50%, -50%);
+    mix-blend-mode: difference; /* Inverts color automatically */
 }
 
+/* Drawing the precise Plus (+) inside the box */
+#af-cursor::before, #af-cursor::after {
+    content: '';
+    position: absolute;
+    background: white;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+}
+#af-cursor::before {
+    width: 10px; height: 1px; /* Horizontal line */
+}
+#af-cursor::after {
+    width: 1px; height: 10px; /* Vertical line */
+}
+
+/* Unique fade for the cursor to prevent mix-blend-mode glitching */
+.cursor-fade {
+    transition: opacity 0.3s ease;
+    opacity: 1;
+}
+.cursor-fade.idle {
+    transition: opacity 2s ease;
+    opacity: 0 !important; /* Forces the hide to override video rendering */
+}
+
+/* UI fade for other elements */
 .fade-ui {
     transition: opacity 0.2s ease, filter 0.2s ease;
     opacity: 1;
@@ -50,7 +70,19 @@ body {
     height: 100vh;
     overflow-y: scroll;
     scroll-snap-type: y proximity;
+    overflow-x: hidden;
 }
+
+/* Hide scrollbars for Chrome, Safari and Opera */
+.scroll-container::-webkit-scrollbar {
+    display: none;
+}
+/* Hide scrollbars for IE, Edge and Firefox */
+.scroll-container {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
 .snap-section {
     height: 100vh;
     width: 100vw;
@@ -123,24 +155,28 @@ body {
     position: absolute;
     top: 0;
     bottom: 0;
-    width: 20px; /* Width of the holes */
-    /* This creates the repeating rectangles. Adjust the '35px' to change spacing */
+    width: 20px; 
     background-image: linear-gradient(to bottom, transparent 10px, #f3f2ed 10px, #f3f2ed 25px, transparent 25px);
     background-size: 100% 35px;
-    z-index: 2; /* Ensures they sit above the background */
+    z-index: 2; 
+    pointer-events: none; /* ADD THIS: Stops the holes from blocking your mouse */
 }
-
 .filmstrip-container::before { left: 15px; } /* Left column of holes */
 .filmstrip-container::after { right: 15px; } /* Right column of holes */
+
 .film-project-card {
     position: relative;
     width: 100%;
-    aspect-ratio: 3 / 2; /* Maintained standard */
+    aspect-ratio: 3 / 2; /* Maintained 3:2 standard */
     background: #333;
     cursor: none;
     overflow: hidden;
+    flex-shrink: 0; /* Prevents the flexbox from crushing or stretching the card */
 }
-.thumbnail-img {
+.thumbnail-img, .thumbnail-video {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -164,22 +200,68 @@ body {
     padding: 60px;
 }
 
-/* --- Gallery Grid --- */
-.photo-gallery {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 10px;
-    padding: 40px;
-}
-.gallery-img {
-    background: #ccc;
-    aspect-ratio: 1 / 1;
-}
-.gallery-img.landscape {
-    grid-column: span 2;
-    aspect-ratio: 2 / 1;
+/* --- Timeline Progress (Premiere Style) --- */
+.timeline-container {
+    position: absolute;
+    bottom: 40px;
+    left: 5%;
+    width: 90%;
+    height: 30px;
+    pointer-events: auto;
+    cursor: none;
 }
 
+/* Generates the Premiere Pro tick marks */
+.timeline-ticks {
+    position: absolute;
+    bottom: 0; left: 0; width: 100%; height: 15px;
+    background: repeating-linear-gradient(
+        to right,
+        rgba(255,255,255,0.4) 0px,
+        rgba(255,255,255,0.4) 2px,
+        transparent 2px,
+        transparent 20px /* Changes the spacing between ticks */
+    );
+    border-bottom: 2px solid rgba(255,255,255,0.8);
+}
+
+/* The white playhead fill */
+.timeline-progress {
+    position: absolute;
+    bottom: 0; left: 0; height: 15px;
+    background: rgba(255, 255, 255, 0.8); /* Slightly transparent white */
+    width: 0%; /* JS will update this */
+    border-right: 2px solid white; /* Playhead line */
+}
+
+/* --- Fullscreen Modal Styles --- */
+.fullscreen-modal {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.95);
+    z-index: 10000;
+    display: none; /* Hidden until clicked */
+    justify-content: center;
+    align-items: center;
+}
+.fullscreen-modal.active {
+    display: flex; /* Shows the modal */
+}
+.fullscreen-video {
+    width: 90%; 
+    max-height: 90vh;
+    object-fit: contain; /* Keeps aspect ratio pure */
+}
+.close-btn {
+    position: absolute;
+    top: 30px; right: 50px;
+    color: white; 
+    font-size: 4rem;
+    font-weight: 200;
+    z-index: 10001;
+}
+
+/* --- CTA Section --- */
 .cta-primary {
     display: flex;
     flex-direction: column;
@@ -227,20 +309,46 @@ body {
     width: 100%;
 }
 
-/* --- Hide Scrollbars --- */
-
-/* Hide for Chrome, Safari and Opera */
-.scroll-container::-webkit-scrollbar {
-    display: none;
+/* --- Gallery Grid --- */
+.photo-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+    padding: 40px;
+}
+.gallery-img {
+    background: #ccc;
+    aspect-ratio: 1 / 1;
+}
+.gallery-img.landscape {
+    grid-column: span 2;
+    aspect-ratio: 2 / 1;
 }
 
-/* Hide for IE, Edge and Firefox */
-.scroll-container {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+/* --- Reel Text Overlay Styles --- */
+.reel-text-container {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: white; 
+    width: 80%;
+    max-width: 800px;
+    pointer-events: none; /* Allows clicks to pass through to the video */
+    z-index: 50; /* Forces the text to render in front of the reel video */
 }
 
-/* Safety net to absolutely prevent horizontal scrolling/wobble */
-body, .scroll-container {
-    overflow-x: hidden;
+.reel-title {
+    font-size: clamp(2.5rem, 5vw, 5rem);
+    margin-bottom: 1rem;
+    font-weight: 800;
+    text-shadow: 0px 4px 15px rgba(0,0,0,0.8);
+}
+
+.reel-subtitle {
+    font-size: clamp(1.2rem, 2vw, 1.5rem);
+    font-weight: 300;
+    line-height: 1.5;
+    text-shadow: 0px 2px 10px rgba(0,0,0,0.8);
 }
