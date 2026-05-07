@@ -5,6 +5,25 @@
     box-sizing: border-box;
 }
 
+/* --- Hero Section Responsive Variables --- */
+/* --- Global Variables --- */
+:root {
+    --hero-split: 33.33%; 
+    
+    /* Reel Aspect Ratio & Max Zoom Settings */
+    --video-ratio: 0.5625; /* This is 9 divided by 16 */
+    --max-reel-zoom: 1.2;  /* Change this to 1.15 or 1.25 later to dial it in */
+}
+
+
+/* --- Hero Section Background Control --- */
+.hero-section {
+    background-size: cover; /* Forces the image to fit the screen */
+    background-position: var(--hero-split) center;
+    background-repeat: no-repeat;
+    transition: background-position 0.4s ease-in-out; 
+}
+
 body {
     cursor: none; /* Hides default cursor */
     background-color: #f3f2ed; /* Eggshell */
@@ -23,7 +42,7 @@ body {
     height: 30px;
     border: 1px solid white;
     pointer-events: none;
-    z-index: 20000;
+    z-index: 2147483647 !important;
     transform: translate(-50%, -50%);
     mix-blend-mode: difference; /* Inverts color automatically */
 }
@@ -43,14 +62,15 @@ body {
     width: 1px; height: 10px; /* Vertical line */
 }
 
-/* Unique fade for the cursor to prevent mix-blend-mode glitching */
-.cursor-fade {
-    transition: opacity 0.3s ease;
-    opacity: 1;
-}
 .cursor-fade.idle {
-    transition: opacity 2s ease;
-    opacity: 0 !important; /* Forces the hide to override video rendering */
+    transition: opacity 1s ease; /* Synced to 1 second */
+    opacity: 0 !important; 
+}
+.fade-ui.idle {
+    transition: opacity 1s ease, filter 1s ease; 
+    opacity: 0;
+    filter: blur(8px);
+    pointer-events: none !important; /* Forces invisible items to let your mouse pass through */
 }
 
 /* UI fade for other elements */
@@ -59,11 +79,10 @@ body {
     opacity: 1;
     filter: blur(0px);
 }
-.fade-ui.idle {
-    transition: opacity 2s ease, filter 2s ease;
-    opacity: 0;
-    filter: blur(8px);
-}
+
+
+
+
 
 /* --- Scroll Snapping Architecture --- */
 .scroll-container {
@@ -90,47 +109,51 @@ body {
     position: relative;
 }
 
-/* --- Hero Section & Viewfinder --- */
-.hero-section {
-    background: #000;
-}
-.bg-video, .reel-video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-.viewfinder-grid {
+
+/* --- Hero Text & Typography --- */
+.hero-text-container {
     position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-template-rows: 1fr 1fr 1fr;
+    top: 50%;
+    left: var(--hero-split); 
+    width: calc(100% - var(--hero-split)); 
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    text-align: center;
+    padding: 0 5vw; 
+    z-index: 10;
     pointer-events: none;
+    transition: left 0.4s ease-in-out, width 0.4s ease-in-out; 
 }
-.viewfinder-grid > div:not(.corner, .rec-indicator) {
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-.rec-indicator {
-    position: absolute;
-    top: 40px; right: 40px;
-    color: red;
-    font-weight: bold;
-    letter-spacing: 2px;
-}
-.red-dot {
-    display: inline-block;
-    width: 12px; height: 12px;
-    background: red;
-    border-radius: 50%;
-    margin-right: 5px;
-}
-.hero-text {
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
+
+.hero-greeting {
+    font-family: 'nimbus-sans', sans-serif; 
+    font-size: clamp(3.5rem, 1.5vw, 1.5rem);
+    font-weight: 700; /* Regular weight */
+    text-transform: uppercase;
+    margin-bottom: 10px;
     color: white;
-    font-size: 3rem;
+    text-shadow: 0px 2px 10px rgba(0,0,0,0.4);
 }
+
+.bryce-logo {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 20px;
+    filter: drop-shadow(0px 8px 30px rgba(0, 0, 0, 0.4)); 
+}
+
+.hero-subtitle {
+    font-family: 'nimbus-sans', sans-serif; 
+    font-size: clamp(1.7rem, 2vw, 2.4rem);
+    font-weight: 400;
+    color: rgb(255, 255, 255);
+    margin-top: 10px;
+    text-shadow: 0px 2px 10px rgba(0,0,0,0.4);
+}
+
+
 
 /* --- Work Section (Filmstrip) --- */
 .work-section {
@@ -209,6 +232,7 @@ body {
     height: 30px;
     pointer-events: auto;
     cursor: none;
+    z-index: 50; /* Forces it to the front */
 }
 
 /* Generates the Premiere Pro tick marks */
@@ -232,33 +256,6 @@ body {
     background: rgba(255, 255, 255, 0.8); /* Slightly transparent white */
     width: 0%; /* JS will update this */
     border-right: 2px solid white; /* Playhead line */
-}
-
-/* --- Fullscreen Modal Styles --- */
-.fullscreen-modal {
-    position: fixed;
-    top: 0; left: 0; width: 100vw; height: 100vh;
-    background: rgba(0,0,0,0.95);
-    z-index: 10000;
-    display: none; /* Hidden until clicked */
-    justify-content: center;
-    align-items: center;
-}
-.fullscreen-modal.active {
-    display: flex; /* Shows the modal */
-}
-.fullscreen-video {
-    width: 90%; 
-    max-height: 90vh;
-    object-fit: contain; /* Keeps aspect ratio pure */
-}
-.close-btn {
-    position: absolute;
-    top: 30px; right: 50px;
-    color: white; 
-    font-size: 4rem;
-    font-weight: 200;
-    z-index: 10001;
 }
 
 /* --- CTA Section --- */
@@ -343,12 +340,160 @@ body {
     font-size: clamp(2.5rem, 5vw, 5rem);
     margin-bottom: 1rem;
     font-weight: 800;
-    text-shadow: 0px 4px 15px rgba(0,0,0,0.8);
 }
 
-.reel-subtitle {
-    font-size: clamp(1.2rem, 2vw, 1.5rem);
-    font-weight: 300;
-    line-height: 1.5;
-    text-shadow: 0px 2px 10px rgba(0,0,0,0.8);
+
+
+/* --- Hero Typography & Graphics --- */
+.hello-text {
+    font-family: 'nimbus-sans', sans-serif; 
+    font-size: clamp(1.5rem, 3vw, 4rem); /* Fixed math: Small on mobile, large on desktop */
+    font-weight: 700; 
+    font-style: normal;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    color: white;
+    text-shadow: 0px 4px 25px rgba(0,0,0,0.3); 
+}
+
+
+
+.bryce-logo {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+/* --- Fullscreen Modal Base --- */
+.fullscreen-modal {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: #000;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+.fullscreen-modal.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+.bg-video, .reel-video, .fullscreen-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures the whole video fits on screen */
+    background: #000;
+}
+
+/* --- Unified Video Player Architecture --- */
+.video-player-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.custom-controls {
+    position: absolute;
+    display: flex;
+    gap: 15px;
+    z-index: 20;
+    pointer-events: auto;
+}
+
+/* Base Square Button */
+.ctrl-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: none;
+    transition: transform 0.2s ease, background 0.2s ease;
+    padding: 15px; /* Keeps icons from touching edges */
+}
+
+.ctrl-btn:hover {
+    background: rgba(0, 0, 0, 0.6);
+    transform: scale(1.05);
+}
+
+.ctrl-btn svg { width: 100%; height: 100%; pointer-events: none; }
+.hidden { display: none !important; }
+
+/* The Volume Block (Draggable Fill) */
+.ctrl-volume-container {
+    position: relative;
+    overflow: hidden; /* Keeps the fill inside the rounded corners */
+    padding: 0; /* Override padding so fill hits edges */
+}
+
+.volume-fill {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.3);
+    pointer-events: none; /* Lets clicks pass through to container */
+}
+
+.ctrl-volume-container svg {
+    position: relative;
+    z-index: 2;
+    width: 50%; /* Scale icon down since padding is gone */
+    height: 50%;
+    pointer-events: none;
+}
+
+/* Fullscreen Specific Positioning */
+.ctrl-fullscreen { position: relative; }
+.ctrl-fullscreen .icon-expand,
+.ctrl-fullscreen .icon-shrink {
+    position: absolute;
+    width: 60%;
+    height: 60%;
+}
+
+/* --- OVERRIDE: Force Controls to Work --- */
+.custom-controls {
+    z-index: 99999 !important;
+}
+.ctrl-btn {
+    z-index: 99999 !important;
+}
+
+
+.reel-section {
+    position: relative;
+    overflow: hidden; 
+    
+    /* 1. Try to be full screen height */
+    height: 100vh; 
+    
+    /* 2. BUT, never get taller than the video's natural width multiplied by your max zoom */
+    max-height: calc(100vw * var(--video-ratio) * var(--max-reel-zoom));
+}
+
+/* --- Fullscreen Cursor Hardware Bug Fix --- */
+:fullscreen #af-cursor,
+:-webkit-full-screen #af-cursor {
+    mix-blend-mode: normal !important; /* Turns off the buggy blend mode */
+    background: rgba(255, 255, 255, 0.2) !important; 
+    border-color: white !important;
+}
+
+:fullscreen #af-cursor::before, 
+:fullscreen #af-cursor::after,
+:-webkit-full-screen #af-cursor::before, 
+:-webkit-full-screen #af-cursor::after {
+    background: white !important; 
 }

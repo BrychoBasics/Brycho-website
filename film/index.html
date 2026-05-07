@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bryce | Film Portfolio</title>
+    <link rel="stylesheet" href="https://use.typekit.net/xcn4vqb.css">
     <link rel="stylesheet" href="film-style.css">
 </head>
 <body>
@@ -11,13 +12,8 @@
     <div id="af-cursor" class="cursor-fade"></div>
 
     <main class="scroll-container">
-
-        <section class="snap-section reel-section">
-            <video id="main-reel" class="reel-video" autoplay loop muted playsinline>
-                <source src="assets/reel.mp4" type="video/mp4">
-            </video>
-            
-            <div class="viewfinder-grid fade-ui" style="pointer-events: none;">
+            <section class="snap-section hero-section" style="background-image: url('assets/hero-image.jpg');">
+            <div class="viewfinder-grid" style="pointer-events: none;">
                 <div class="rec-indicator"><span class="red-dot"></span> REC</div>
                 <div class="corner top-left"></div>
                 <div class="corner top-right"></div>
@@ -25,10 +21,35 @@
                 <div class="corner bottom-right"></div>
             </div>
 
-            <div class="reel-text-container fade-ui">
-                <h1 class="reel-title">Hello, My name is Bryce.</h1>
-                <p class="reel-subtitle">I'm a director and cinematographer handcrafting media out of Iowa City, IA. 
-                    Scroll down to see my reel and recent or upcoming projects.</p>
+            <div class="hero-text-container">
+                <p class="hero-greeting">Hello, My name is</p>
+                <img src="assets/BRYCE.webp" alt="Bryce" class="bryce-logo">
+                <p class="hero-subtitle">I'm a director, cinematographer, and all-around creative guy based out of Iowa City, IA.</p>
+                <p class="hero-subtitle">Scroll down to check out my reel, recent or upcoming projects, and more!</p>
+            </div>
+        </section>
+
+        <section class="snap-section reel-section" style="background: #000;">
+            <div id="reel-player-wrapper" class="video-player-wrapper">
+                <video id="main-reel" class="reel-video" muted autoplay loop playsinline></video>
+                
+                <div class="custom-controls fade-ui">
+                    <button class="ctrl-btn ctrl-playpause">
+                        <svg class="icon-play" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                        <svg class="icon-pause hidden" viewBox="0 0 24 24" fill="white"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+                    </button>
+                    
+                    <div class="ctrl-btn ctrl-volume-container">
+                        <div class="volume-fill" style="height: 100%;"></div>
+                        <svg class="icon-sound" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                        <svg class="icon-mute hidden" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="1" x2="1" y2="23"></line></svg>
+                    </div>
+
+                    <button class="ctrl-btn ctrl-fullscreen">
+                        <svg class="icon-expand" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline></svg>
+                        <svg class="icon-shrink hidden" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polyline points="4 14 10 14 10 20"></polyline><polyline points="20 10 14 10 14 4"></polyline></svg>
+                    </button>
+                </div>
             </div>
 
             <div class="timeline-container fade-ui">
@@ -38,67 +59,68 @@
         </section>
 
         <section class="snap-section work-section">
-
             <div class="filmstrip-container">
                 
                 <div class="film-project-card" 
                      data-title="Cambike" 
                      data-roles="Director, Writer, Producer, Cinematographer, Actor, Editor" 
                      data-desc="What if Cambus replaced all their buses with bikes?"
-                     data-video="assets/cambike.mp4"> 
-                    <video class="thumbnail-video" autoplay loop muted playsinline>
-                        <source src="assets/cambike.mp4" type="video/mp4">
-                    </video>
-                    <div class="expand-overlay"><span class="expand-icon">⛶</span></div>
+                     data-video="assets/cambike/master-cambike.m3u8"> 
+                     
+                    <video src="assets/cambike-thumbnail.mp4" class="thumbnail-video" autoplay loop muted playsinline></video>
+                    
+                    <div class="expand-overlay">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="15 3 21 3 21 9"></polyline>
+                            <polyline points="9 21 3 21 3 15"></polyline>
+                            <line x1="21" y1="3" x2="14" y2="10"></line>
+                            <line x1="3" y1="21" x2="10" y2="14"></line>
+                        </svg>
+                    </div>
                 </div>
 
-                <div class="film-project-card" 
-                     data-title="All That Matters" 
-                     data-roles="Director, Editor, Writer, Cinematographer" 
-                     data-desc="Hometown script exploration."
-                     data-video="assets/project1-FULL.mp4"> 
-                    <video class="thumbnail-video" autoplay loop muted playsinline>
-                        <source src="assets/cambike.mp4" type="video/mp4">
-                    </video>
-                    <div class="expand-overlay"><span class="expand-icon">⛶</span></div>
-                </div>
-
-                <div class="film-project-card" 
-                     data-title="For Context" 
-                     data-roles="Writer, Director, Cinematographer" 
-                     data-desc="Hometown script exploration."
-                     data-video="assets/project1-FULL.mp4"> 
-                    <video class="thumbnail-video" autoplay loop muted playsinline>
-                        <source src="assets/cambike.mp4" type="video/mp4">
-                    </video>
-                    <div class="expand-overlay"><span class="expand-icon">⛶</span></div>
-                </div>
-
-            </div> <div class="work-details">
+            </div> 
+            
+            <div class="work-details">
                 <h3 id="dynamic-title">Hover over a project</h3>
                 <p id="dynamic-roles"></p>
                 <p id="dynamic-desc"></p>
             </div>
-        </section>
-
-        <section class="snap-section footer-section">
-            <div class="cta-primary">
-    <h2 class="cta-title">Let's make something together.</h2>
-    <div class="cta-links">
-        <a href="mailto:bryce.connect@gmail.com">Email</a>
-        <a href="https://instagram.com/bryce__krispies">Instagram</a>
-    </div>
-</div>
-    
-        
+            
         </section>
 
     </main>
 
-    <div id="fullscreen-modal" class="fullscreen-modal fade-ui">
-    <div class="close-btn fade-ui" id="close-modal">×</div>
-    <video id="modal-video" class="fullscreen-video" controls autoplay playsinline></video>
-</div>
+    <div id="fullscreen-modal" class="fullscreen-modal">
+        
+        <div id="modal-player-wrapper" class="video-player-wrapper">
+            <video id="modal-video" class="fullscreen-video" autoplay loop playsinline></video>
+            
+            <div class="custom-controls fade-ui">
+                <button class="ctrl-btn ctrl-exit" id="close-modal">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                </button>
+
+                <button class="ctrl-btn ctrl-playpause">
+                    <svg class="icon-play hidden" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                    <svg class="icon-pause" viewBox="0 0 24 24" fill="white"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+                </button>
+                
+                <div class="ctrl-btn ctrl-volume-container">
+                    <div class="volume-fill" style="height: 100%;"></div>
+                    <svg class="icon-sound" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                    <svg class="icon-mute hidden" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="1" x2="1" y2="23"></line></svg>
+                </div>
+
+                <button class="ctrl-btn ctrl-fullscreen">
+                    <svg class="icon-expand" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline></svg>
+                    <svg class="icon-shrink hidden" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polyline points="4 14 10 14 10 20"></polyline><polyline points="20 10 14 10 14 4"></polyline></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
     <script src="film-script.js"></script>
 </body>
 </html>
