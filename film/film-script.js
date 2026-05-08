@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const uiElements = document.querySelectorAll('.fade-ui');
     const cursorFade = document.querySelectorAll('.cursor-fade'); 
     let idleTimer;
+    let isHoveringVideo = false;
 
     function resetIdleTimer() {
         uiElements.forEach(el => el.classList.remove('idle'));
@@ -13,63 +14,101 @@ document.addEventListener('DOMContentLoaded', () => {
         
         idleTimer = setTimeout(() => {
             uiElements.forEach(el => el.classList.add('idle'));
-            cursorFade.forEach(el => el.classList.add('idle'));
+            if (isHoveringVideo) {
+                cursorFade.forEach(el => el.classList.add('idle'));
+            }
         }, 1500);
     }
 
     window.addEventListener('mousemove', (e) => {
         cursor.style.left = `${e.clientX}px`;
         cursor.style.top = `${e.clientY}px`;
+        isHoveringVideo = !!e.target.closest('.video-player-wrapper');
         resetIdleTimer();
     });
 
-    document.addEventListener('mouseout', () => {
-        cursor.style.opacity = '0';
-    });
-    document.addEventListener('mouseover', () => {
-        cursor.style.opacity = '1';
-    });
+    // Wake up the UI when the user scrolls the page
+    const scrollContainer = document.querySelector('.scroll-container');
+    if (scrollContainer) {
+        scrollContainer.addEventListener('scroll', resetIdleTimer);
+    }
 
-   // --- Unified Video Player Engine ---
+    // Start the timer immediately on load so things hide if you do nothing
+    resetIdleTimer();
+
+    document.addEventListener('mouseout', () => cursor.style.opacity = '0');
+    document.addEventListener('mouseover', () => cursor.style.opacity = '1');
+
+    // --- 1.5. Mutually Exclusive Audio Engine ---
+    function muteOtherVideos(currentVideoElement) {
+        const allVideos = document.querySelectorAll('.video-player-wrapper video');
+        allVideos.forEach(vid => {
+            // If it's a different video and it is currently playing sound
+            if (vid !== currentVideoElement && !vid.muted) {
+                vid.muted = true;
+                const wrapper = vid.closest('.video-player-wrapper');
+                if (wrapper) {
+                    const volFill = wrapper.querySelector('.volume-fill');
+                    const iconSound = wrapper.querySelector('.icon-sound');
+                    const iconMute = wrapper.querySelector('.icon-mute');
+                    if (volFill) volFill.style.height = '0%';
+                    if (iconSound) iconSound.classList.add('hidden');
+                    if (iconMute) iconMute.classList.remove('hidden');
+                }
+            }
+        });
+    }
+
+    // --- 2. Unified Auto-Detecting Video Engine ---
     function setupVideoController(wrapperId, videoId) {
         const wrapper = document.getElementById(wrapperId);
         const video = document.getElementById(videoId);
         if (!wrapper || !video) return;
 
+        // Auto-detect UI elements inside this specific wrapper
         const btnPlayPause = wrapper.querySelector('.ctrl-playpause');
         const iconPlay = wrapper.querySelector('.icon-play');
         const iconPause = wrapper.querySelector('.icon-pause');
-        
         const volContainer = wrapper.querySelector('.ctrl-volume-container');
         const volFill = wrapper.querySelector('.volume-fill');
         const iconSound = wrapper.querySelector('.icon-sound');
         const iconMute = wrapper.querySelector('.icon-mute');
-
         const btnFS = wrapper.querySelector('.ctrl-fullscreen');
-        const iconExpand = wrapper.querySelector('.icon-expand');
-        const iconShrink = wrapper.querySelector('.icon-shrink');
+        const timeline = wrapper.querySelector('.timeline-container');
+        const progress = wrapper.querySelector('.timeline-progress');
 
         // Play/Pause Toggle
         function togglePlay() {
             if (video.paused) {
-                video.play();
-                iconPlay.classList.add('hidden');
-                iconPause.classList.remove('hidden');
+                const playPromise = video.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(error => console.log("Autoplay prevented"));
+                }
+                if(iconPlay) iconPlay.classList.add('hidden');
+                if(iconPause) iconPause.classList.remove('hidden');
             } else {
                 video.pause();
-                iconPause.classList.add('hidden');
-                iconPlay.classList.remove('hidden');
+                if(iconPause) iconPause.classList.add('hidden');
+                if(iconPlay) iconPlay.classList.remove('hidden');
             }
         }
-        if (btnPlayPause) btnPlayPause.addEventListener('click', togglePlay);
-        video.addEventListener('click', togglePlay); // Click video to toggle
+        
+        if (btnPlayPause) {
+            btnPlayPause.addEventListener('click', (e) => {
+                e.stopPropagation(); 
+                togglePlay();
+            });
+        }
+        video.addEventListener('click', (e) => {
+            e.stopPropagation();
+            togglePlay();
+        });
 
-        // Volume Drag & Toggle Logic
+        // Volume Logic
         let isDraggingVol = false;
-
         function updateVolume(e) {
+            if(!volContainer || !volFill) return;
             const rect = volContainer.getBoundingClientRect();
-            // Calculate height from bottom of the square
             let y = rect.bottom - e.clientY;
             let percentage = Math.max(0, Math.min(1, y / rect.height));
             
@@ -78,35 +117,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (percentage === 0) {
                 video.muted = true;
-                iconSound.classList.add('hidden');
-                iconMute.classList.remove('hidden');
+                if(iconSound) iconSound.classList.add('hidden');
+                if(iconMute) iconMute.classList.remove('hidden');
             } else {
                 video.muted = false;
-                iconMute.classList.add('hidden');
-                iconSound.classList.remove('hidden');
+                if(iconMute) iconMute.classList.add('hidden');
+                if(iconSound) iconSound.classList.remove('hidden');
+                muteOtherVideos(video);
             }
         }
 
         if (volContainer) {
-            // Click to toggle mute/unmute
             volContainer.addEventListener('click', (e) => {
-                // If they just clicked (not dragged), toggle mute
+                e.stopPropagation();
                 if (!isDraggingVol) {
                     video.muted = !video.muted;
                     if (video.muted) {
-                        volFill.style.height = '0%';
-                        iconSound.classList.add('hidden');
-                        iconMute.classList.remove('hidden');
+                        if(volFill) volFill.style.height = '0%';
+                        if(iconSound) iconSound.classList.add('hidden');
+                        if(iconMute) iconMute.classList.remove('hidden');
                     } else {
-                        volFill.style.height = `${video.volume * 100}%`;
-                        iconMute.classList.add('hidden');
-                        iconSound.classList.remove('hidden');
+                        if(volFill) volFill.style.height = `${video.volume * 100}%`;
+                        if(iconMute) iconMute.classList.add('hidden');
+                        if(iconSound) iconSound.classList.remove('hidden');
+                        muteOtherVideos(video);
                     }
                 }
             });
-
-            // Drag to set exact volume
             volContainer.addEventListener('mousedown', (e) => {
+                e.stopPropagation();
                 isDraggingVol = true;
                 updateVolume(e);
             });
@@ -114,47 +153,57 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (isDraggingVol) updateVolume(e);
             });
             document.addEventListener('mouseup', () => {
-                setTimeout(() => isDraggingVol = false, 50); // slight delay to prevent click fire
+                setTimeout(() => isDraggingVol = false, 50); 
+            });
+        }
+
+        // Timeline Scrubber
+        if (timeline && progress) {
+            timeline.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (video.duration) {
+                    const rect = timeline.getBoundingClientRect();
+                    const clickX = e.clientX - rect.left;
+                    const percentage = clickX / rect.width;
+                    video.currentTime = percentage * video.duration;
+                }
+            });
+            video.addEventListener('timeupdate', () => {
+                if (video.duration) {
+                    progress.style.width = `${(video.currentTime / video.duration) * 100}%`;
+                }
             });
         }
 
         // Fullscreen Toggle
         if (btnFS) {
-            btnFS.addEventListener('click', () => {
+            btnFS.addEventListener('click', (e) => {
+                e.stopPropagation();
                 if (!document.fullscreenElement) {
                     wrapper.requestFullscreen().catch(err => console.log(err));
-                    iconExpand.classList.add('hidden');
-                    iconShrink.classList.remove('hidden');
                 } else {
-                    document.exitFullscreen();
-                    iconShrink.classList.add('hidden');
-                    iconExpand.classList.remove('hidden');
+                    document.exitFullscreen().catch(err => console.log(err));
                 }
             });
         }
     }
 
-    // Initialize both players
+    // Initialize both players! (No more timeline IDs needed)
     setupVideoController('reel-player-wrapper', 'main-reel');
     setupVideoController('modal-player-wrapper', 'modal-video');
 
-
-    // --- HLS Reel Initialization ---
+    // --- 3. HLS Reel Initialization ---
     const reelVideo = document.getElementById('main-reel');
     if (reelVideo) {
-        // Pointing to your specific cambike folder!
         const reelSrc = "assets/cambike/master-cambike.m3u8"; 
         
         if (typeof Hls !== 'undefined' && Hls.isSupported()) {
             const hlsReel = new Hls();
             hlsReel.loadSource(reelSrc);
             hlsReel.attachMedia(reelVideo);
-            
-            // Explicitly tell it to play once loaded
             hlsReel.on(Hls.Events.MANIFEST_PARSED, function() {
-                reelVideo.play();
+                reelVideo.play().catch(() => console.log("Autoplay blocked by browser."));
                 
-                // Update the custom controls to show the pause icon
                 const wrapper = document.getElementById('reel-player-wrapper');
                 if(wrapper) {
                     wrapper.querySelector('.icon-play').classList.add('hidden');
@@ -167,19 +216,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 reelVideo.play();
             });
         }
-        
-        const progressBar = document.getElementById('reel-progress');
-        reelVideo.addEventListener('timeupdate', () => {
-            if (reelVideo.duration) {
-                progressBar.style.width = `${(reelVideo.currentTime / reelVideo.duration) * 100}%`;
-            }
-        });
     }
 
-    // --- Hover Text Logic ---
+    // --- 4. Hover Text & Modal HLS Logic ---
     const titleEl = document.getElementById('dynamic-title');
     const rolesEl = document.getElementById('dynamic-roles');
     const descEl = document.getElementById('dynamic-desc');
+    const modal = document.getElementById('fullscreen-modal');
+    const modalVideo = document.getElementById('modal-video');
+    const modalVolFill = document.querySelector('#modal-player-wrapper .volume-fill');
 
     document.addEventListener('mouseover', (e) => {
         const card = e.target.closest('.film-project-card');
@@ -187,15 +232,41 @@ document.addEventListener('DOMContentLoaded', () => {
             if (titleEl) titleEl.textContent = card.getAttribute('data-title') || 'Untitled';
             if (rolesEl) rolesEl.textContent = card.getAttribute('data-roles') || '';
             if (descEl) descEl.textContent = card.getAttribute('data-desc') || '';
+
+            // --- Dynamic Vertical Alignment ---
+            const detailsContent = document.querySelector('.details-content');
+            const workDetails = document.querySelector('.work-details');
+            if (detailsContent && workDetails) {
+                const cardRect = card.getBoundingClientRect();
+                const detailsRect = workDetails.getBoundingClientRect();
+                const contentHeight = detailsContent.getBoundingClientRect().height;
+                
+                // Find vertical center of the card relative to the sticky container
+                const relativeCenterY = (cardRect.top - detailsRect.top) + (cardRect.height / 2);
+                const targetY = relativeCenterY - (contentHeight / 2);
+                
+                detailsContent.style.transform = `translateY(${targetY}px)`;
+            }
         }
     });
 
-    // --- Modal Open, Close, 65% Volume & HLS Logic ---
-    const modal = document.getElementById('fullscreen-modal');
-    const modalVideo = document.getElementById('modal-video');
-    const closeModalBtn = document.getElementById('close-modal');
-    const modalVolFill = document.querySelector('#modal-player-wrapper .volume-fill'); // Grabs the UI fill
+    // --- 4.5. Copy Email Button Engine ---
+    const copyEmailBtn = document.getElementById('copy-email-btn');
+    if (copyEmailBtn) {
+        copyEmailBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            navigator.clipboard.writeText('bryce.connect@gmail.com').then(() => {
+                const span = copyEmailBtn.querySelector('span');
+                const originalText = span.textContent;
+                span.textContent = 'Copied to clipboard!';
+                setTimeout(() => {
+                    span.textContent = originalText;
+                }, 2000);
+            });
+        });
+    }
 
+    // Click project to open
     document.addEventListener('click', (e) => {
         const card = e.target.closest('.film-project-card');
         if (card && !card.classList.contains('coming-soon-card')) {
@@ -203,18 +274,17 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (fullVideoSrc && fullVideoSrc !== "") {
                 modal.classList.add('active'); 
+                muteOtherVideos(modalVideo); // Immediately mute the reel when a project is opened
 
-                // Load HLS
                 if (typeof Hls !== 'undefined' && Hls.isSupported()) {
                     const hlsModal = new Hls();
                     hlsModal.loadSource(fullVideoSrc);
                     hlsModal.attachMedia(modalVideo);
                     hlsModal.on(Hls.Events.MANIFEST_PARSED, function() {
-                        // Set Volume to 65%
                         modalVideo.volume = 0.65;
                         modalVideo.muted = false;
                         if (modalVolFill) modalVolFill.style.height = '65%';
-
+                        
                         modalVideo.play();
                         
                         const wrapper = document.getElementById('modal-player-wrapper');
@@ -228,46 +298,68 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- The Fullscreen Cursor Fix ---
-    // Update your setupVideoController function's Fullscreen section to this:
-    if (btnFS) {
-        btnFS.addEventListener('click', () => {
-            const customCursor = document.getElementById('af-cursor');
-            
-            if (!document.fullscreenElement) {
-                wrapper.requestFullscreen().then(() => {
-                    // Moves the cursor INSIDE the fullscreen container
-                    wrapper.appendChild(customCursor); 
-                }).catch(err => console.log(err));
-                iconExpand.classList.add('hidden');
-                iconShrink.classList.remove('hidden');
-            } else {
-                document.exitFullscreen().then(() => {
-                    // Moves the cursor back to the main body when exiting
-                    document.body.appendChild(customCursor); 
-                });
-                iconShrink.classList.add('hidden');
-                iconExpand.classList.remove('hidden');
-            }
-        });
-    }
-
-
-    // 2. Close Modal Logic
+    // --- 5. Exit Button & Close Logic ---
     function closeFullscreen() {
+        if (document.fullscreenElement) {
+            document.exitFullscreen().catch(err => console.log(err));
+        }
         if (modal) modal.classList.remove('active');
         if (modalVideo) {
             modalVideo.pause();
-            modalVideo.removeAttribute('src'); // Stops the browser from downloading chunks in the background
+            modalVideo.removeAttribute('src'); 
             modalVideo.load();
         }
     }
 
-    if (closeModalBtn) closeModalBtn.addEventListener('click', closeFullscreen);
+    const closeModalBtn = document.getElementById('close-modal');
+    if (closeModalBtn) {
+        closeModalBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            closeFullscreen();
+        });
+    }
 
     modal.addEventListener('click', (e) => {
-        if (e.target === modal) { 
-            closeFullscreen();
+        if (e.target === modal) closeFullscreen();
+    });
+
+    // --- 6. Global Fullscreen Event Listener ---
+    document.addEventListener('fullscreenchange', () => {
+        const customCursor = document.getElementById('af-cursor');
+        
+        if (document.fullscreenElement) {
+            document.fullscreenElement.appendChild(customCursor);
+            
+            const activeWrapper = document.fullscreenElement;
+            const expand = activeWrapper.querySelector('.icon-expand');
+            const shrink = activeWrapper.querySelector('.icon-shrink');
+            if (expand) expand.classList.add('hidden');
+            if (shrink) shrink.classList.remove('hidden');
+        } else {
+            document.body.appendChild(customCursor);
+            
+            document.querySelectorAll('.icon-expand').forEach(el => el.classList.remove('hidden'));
+            document.querySelectorAll('.icon-shrink').forEach(el => el.classList.add('hidden'));
         }
     });
-}); // <-- Final closing bracket
+
+    // --- 7. Auto-Mute Reel When Scrolled Out of View ---
+    const reelWrapper = document.getElementById('reel-player-wrapper');
+    if (reelWrapper && reelVideo) {
+        const reelObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting && !reelVideo.muted) {
+                    reelVideo.muted = true;
+                    const volFill = reelWrapper.querySelector('.volume-fill');
+                    const iconSound = reelWrapper.querySelector('.icon-sound');
+                    const iconMute = reelWrapper.querySelector('.icon-mute');
+                    if (volFill) volFill.style.height = '0%';
+                    if (iconSound) iconSound.classList.add('hidden');
+                    if (iconMute) iconMute.classList.remove('hidden');
+                }
+            });
+        }, { threshold: 0.1 }); // Triggers when less than 10% of the video is visible
+        reelObserver.observe(reelWrapper);
+    }
+
+}); // <-- The absolute end of the file.

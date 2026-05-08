@@ -44,7 +44,7 @@ body {
     pointer-events: none;
     z-index: 2147483647 !important;
     transform: translate(-50%, -50%);
-    mix-blend-mode: difference; /* Inverts color automatically */
+    mix-blend-mode: difference; /* Restores the color-inverting cinematic cursor */
 }
 
 /* Drawing the precise Plus (+) inside the box */
@@ -105,9 +105,15 @@ body {
 .snap-section {
     height: 100vh;
     width: 100vw;
-    scroll-snap-align: center;
     position: relative;
+    /* Removed scroll-snap-align from the base class! */
 }
+
+/* Only gently snap the Reel to the TOP edge, let everything else scroll freely */
+.reel-section {
+    scroll-snap-align: start; 
+}
+/* The hero-section has no snap rule, so it will scroll naturally and seamlessly! */
 
 
 /* --- Hero Text & Typography --- */
@@ -129,9 +135,10 @@ body {
 
 .hero-greeting {
     font-family: 'nimbus-sans', sans-serif; 
-    font-size: clamp(3.5rem, 1.5vw, 1.5rem);
+    font-size: clamp(1.9rem, 3.1vw, 2.8rem); 
     font-weight: 700; /* Regular weight */
     text-transform: uppercase;
+    letter-spacing: 5px;
     margin-bottom: 10px;
     color: white;
     text-shadow: 0px 2px 10px rgba(0,0,0,0.4);
@@ -140,17 +147,22 @@ body {
 .bryce-logo {
     max-width: 100%;
     height: auto;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     filter: drop-shadow(0px 8px 30px rgba(0, 0, 0, 0.4)); 
 }
 
 .hero-subtitle {
     font-family: 'nimbus-sans', sans-serif; 
-    font-size: clamp(1.7rem, 2vw, 2.4rem);
+    font-size: clamp(1.3rem, 1.65vw, 1.8rem); 
     font-weight: 400;
-    color: rgb(255, 255, 255);
-    margin-top: 10px;
-    text-shadow: 0px 2px 10px rgba(0,0,0,0.4);
+    color: rgba(255, 255, 255, 0.85); /* Slightly transparent to make the logo pop */
+    line-height: 1.6;
+    letter-spacing: 0.5px;
+    margin-top: 15px;
+    text-shadow: 0px 2px 10px rgba(0,0,0,0.6);
+    text-wrap: balance;
+    max-width: 48ch;
+    margin-inline: auto;
 }
 
 
@@ -158,34 +170,38 @@ body {
 /* --- Work Section (Filmstrip) --- */
 .work-section {
     display: grid;
-    grid-template-columns: 25% 75%;
+    grid-template-columns: clamp(5%, 510px, 50%) 1fr;
     background: #f3f2ed;
+    border-top: 10px solid #111;
+    border-bottom: 10px solid #111;
+    align-items: start; /* Allows the sticky text panel to operate independently from the row height */
 }
 .filmstrip-container {
-    background: #111; /* The dark plastic of the film */
-    padding: 20px 50px; /* 50px padding gives room for the sprocket holes */
+    /* === PIXEL CONTROL PANEL (Absolute Values) === */
+    --film-padding-x: 50px;     /* Space between outer edge and video cards */
+    --film-padding-y: 20px;     /* Padding at the very top and bottom of the strip */
+    --card-gap: 20px;           /* Space between each video card */
+    
+    --hole-width: 20px;
+    --hole-height: 14px;      
+    --hole-spacing: 33px;     
+    --hole-edge-offset: 15px; 
+    /* ============================================= */
+
+    container-type: inline-size;
+    background-color: #111; /* The dark plastic of the film */
+    background-image: 
+        linear-gradient(to bottom, #f3f2ed var(--hole-height), transparent 0),
+        linear-gradient(to bottom, #f3f2ed var(--hole-height), transparent 0);
+    background-size: var(--hole-width) var(--hole-spacing);
+    background-position: var(--hole-edge-offset) 0, calc(100% - var(--hole-edge-offset)) 0;
+    background-repeat: repeat-y;
+    padding: var(--film-padding-y) var(--film-padding-x);
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: var(--card-gap);
     position: relative;
-    overflow-y: auto;
 }
-
-/* Creating the sprocket holes */
-.filmstrip-container::before,
-.filmstrip-container::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 20px; 
-    background-image: linear-gradient(to bottom, transparent 10px, #f3f2ed 10px, #f3f2ed 25px, transparent 25px);
-    background-size: 100% 35px;
-    z-index: 2; 
-    pointer-events: none; /* ADD THIS: Stops the holes from blocking your mouse */
-}
-.filmstrip-container::before { left: 15px; } /* Left column of holes */
-.filmstrip-container::after { right: 15px; } /* Right column of holes */
 
 .film-project-card {
     position: relative;
@@ -219,8 +235,81 @@ body {
 .film-project-card:hover .expand-overlay {
     opacity: 1;
 }
+
+/* --- Placeholder & Coming Soon --- */
+.placeholder-thumbnail {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: #222;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #555;
+}
+.placeholder-thumbnail svg {
+    width: 40px; height: 40px;
+}
+.coming-soon-badge {
+    position: absolute;
+    top: 15px; left: 15px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 6px 12px;
+    font-family: 'nimbus-sans', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    border-radius: 4px;
+    z-index: 10;
+}
+.coming-soon-card .expand-overlay {
+    display: none !important;
+}
+
 .work-details {
-    padding: 60px;
+    position: sticky;
+    top: 0;
+    height: 100vh; /* Perfectly pins to the screen as you scroll past the left section */
+    padding: 0 6vw;
+    overflow: hidden; /* Prevents text from spilling out if it animates near the edges */
+}
+
+.details-content {
+    /* Start text in the middle of the screen before any hover */
+    transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+    will-change: transform;
+}
+
+#dynamic-title {
+    font-family: 'nimbus-sans', sans-serif;
+    font-size: clamp(3rem, 5vw, 6rem);
+    font-weight: 800;
+    text-transform: uppercase;
+    line-height: 0.9;
+    letter-spacing: -2px;
+    margin-bottom: 1.5rem;
+    color: #111;
+}
+
+#dynamic-roles {
+    font-family: 'nimbus-sans', sans-serif;
+    font-size: clamp(1rem, 1.5vw, 1.2rem);
+    font-weight: 700;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin-bottom: 2rem;
+}
+
+#dynamic-desc {
+    font-family: 'nimbus-sans', sans-serif;
+    font-size: clamp(1.2rem, 2vw, 1.6rem);
+    font-weight: 400;
+    color: #333;
+    line-height: 1.5;
+    text-wrap: balance;
+    max-width: 42ch;
 }
 
 /* --- Timeline Progress (Premiere Style) --- */
@@ -264,7 +353,7 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 10vh 20px;
+    padding: 15vh 20px;
     background-color: #f3f2ed;
     text-align: center;
 }
@@ -277,33 +366,43 @@ body {
     letter-spacing: -1px;
 }
 
+.cta-subtitle {
+    font-family: 'nimbus-sans', sans-serif;
+    font-size: clamp(1.2rem, 2vw, 1.5rem);
+    color: #555;
+    margin-bottom: 2rem;
+}
+
 .cta-links {
     display: flex;
     gap: 2rem;
 }
 
-.cta-links a {
-    color: #111;
-    text-decoration: none;
-    font-size: 1.2rem;
-    font-weight: 600;
-    position: relative;
-    padding-bottom: 5px;
-}
-
-/* Cool underline hover effect for the links */
-.cta-links a::after {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 0;
-    width: 0%;
-    height: 2px;
+.copy-email-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
     background: #111;
-    transition: width 0.3s ease;
+    color: white;
+    border: 2px solid #111;
+    padding: 15px 30px;
+    border-radius: 40px;
+    font-size: 1.2rem;
+    font-family: 'nimbus-sans', sans-serif;
+    font-weight: 700;
+    cursor: none;
+    transition: all 0.2s ease;
 }
 
-.cta-links a:hover::after {
-    width: 100%;
+.copy-email-btn:hover {
+    background: transparent;
+    color: #111;
+    transform: translateY(-3px);
+}
+
+.copy-email-btn svg {
+    width: 24px;
+    height: 24px;
 }
 
 /* --- Gallery Grid --- */
@@ -375,16 +474,21 @@ body {
     align-items: center;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.3s ease;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 .fullscreen-modal.active {
     opacity: 1;
     pointer-events: auto;
+    visibility: visible;
 }
 .bg-video, .reel-video, .fullscreen-video {
+    position: absolute;
+    top: 0; left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Ensures the whole video fits on screen */
+    object-fit: cover; 
+    z-index: 1; /* Explicitly keeps the video BEHIND the controls */
     background: #000;
 }
 
@@ -400,9 +504,12 @@ body {
 
 .custom-controls {
     position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     display: flex;
     gap: 15px;
-    z-index: 20;
+    z-index: 50; /* Pushes buttons ABOVE the video */
     pointer-events: auto;
 }
 
@@ -459,18 +566,29 @@ body {
 .ctrl-fullscreen .icon-expand,
 .ctrl-fullscreen .icon-shrink {
     position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     width: 60%;
     height: 60%;
 }
 
-/* --- OVERRIDE: Force Controls to Work --- */
-.custom-controls {
-    z-index: 99999 !important;
+/* --- Reel Expanding Border --- */
+.reel-border {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    border: 15px solid rgba(255, 255, 255, 0.8);
+    pointer-events: none;
+    z-index: 60; /* Sits above the video */
+    transition: transform 0.2s ease, opacity 0.2s ease, filter 0.2s ease !important;
+    will-change: transform, opacity;
 }
-.ctrl-btn {
-    z-index: 99999 !important;
+.reel-border.idle {
+    transform: scale(1.05); /* Expands outwards smoothly */
+    opacity: 0 !important;
+    filter: blur(8px) !important; 
+    transition: transform 1s ease, opacity 1s ease, filter 1s ease !important;
 }
-
 
 .reel-section {
     position: relative;
@@ -486,8 +604,7 @@ body {
 /* --- Fullscreen Cursor Hardware Bug Fix --- */
 :fullscreen #af-cursor,
 :-webkit-full-screen #af-cursor {
-    mix-blend-mode: normal !important; /* Turns off the buggy blend mode */
-    background: rgba(255, 255, 255, 0.2) !important; 
+    background: transparent !important; 
     border-color: white !important;
 }
 
@@ -496,4 +613,12 @@ body {
 :-webkit-full-screen #af-cursor::before, 
 :-webkit-full-screen #af-cursor::after {
     background: white !important; 
+}
+
+/* --- Forces Native Fullscreen to Fill the Monitor --- */
+:fullscreen .video-player-wrapper,
+:-webkit-full-screen .video-player-wrapper {
+    width: 100vw !important;
+    height: 100vh !important;
+    background: black;
 }

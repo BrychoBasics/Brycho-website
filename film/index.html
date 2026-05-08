@@ -13,13 +13,6 @@
 
     <main class="scroll-container">
             <section class="snap-section hero-section" style="background-image: url('assets/hero-image.jpg');">
-            <div class="viewfinder-grid" style="pointer-events: none;">
-                <div class="rec-indicator"><span class="red-dot"></span> REC</div>
-                <div class="corner top-left"></div>
-                <div class="corner top-right"></div>
-                <div class="corner bottom-left"></div>
-                <div class="corner bottom-right"></div>
-            </div>
 
             <div class="hero-text-container">
                 <p class="hero-greeting">Hello, My name is</p>
@@ -31,6 +24,7 @@
 
         <section class="snap-section reel-section" style="background: #000;">
             <div id="reel-player-wrapper" class="video-player-wrapper">
+                <div class="reel-border fade-ui"></div>
                 <video id="main-reel" class="reel-video" muted autoplay loop playsinline></video>
                 
                 <div class="custom-controls fade-ui">
@@ -40,9 +34,9 @@
                     </button>
                     
                     <div class="ctrl-btn ctrl-volume-container">
-                        <div class="volume-fill" style="height: 100%;"></div>
-                        <svg class="icon-sound" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
-                        <svg class="icon-mute hidden" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="1" x2="1" y2="23"></line></svg>
+                        <div class="volume-fill" style="height: 0%;"></div>
+                        <svg class="icon-sound hidden" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                        <svg class="icon-mute" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="1" x2="1" y2="23"></line></svg>
                     </div>
 
                     <button class="ctrl-btn ctrl-fullscreen">
@@ -50,22 +44,23 @@
                         <svg class="icon-shrink hidden" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polyline points="4 14 10 14 10 20"></polyline><polyline points="20 10 14 10 14 4"></polyline></svg>
                     </button>
                 </div>
-            </div>
 
-            <div class="timeline-container fade-ui">
-                <div class="timeline-ticks"></div>
-                <div class="timeline-progress" id="reel-progress"></div>
+                <div class="timeline-container fade-ui" id="reel-timeline">
+                    <div class="timeline-ticks"></div>
+                    <div class="timeline-progress" id="reel-progress"></div>
+                </div>
             </div>
         </section>
 
-        <section class="snap-section work-section">
+        <section class="work-section">
             <div class="filmstrip-container">
                 
-                <div class="film-project-card" 
+                <div class="film-project-card coming-soon-card" 
                      data-title="Cambike" 
                      data-roles="Director, Writer, Producer, Cinematographer, Actor, Editor" 
                      data-desc="What if Cambus replaced all their buses with bikes?"
                      data-video="assets/cambike/master-cambike.m3u8"> 
+                     <div class="coming-soon-badge">Coming Soon</div>
                      
                     <video src="assets/cambike-thumbnail.mp4" class="thumbnail-video" autoplay loop muted playsinline></video>
                     
@@ -79,20 +74,89 @@
                     </div>
                 </div>
 
+                <div class="film-project-card coming-soon-card" 
+                     data-title="Cambus Training Video Program" 
+                     data-roles="Director, Cinematographer, Writer, Producer, Editor, Actor" 
+                     data-desc="14+ multi-angle videos teaching new drivers the ropes of driving Cambus routes"> 
+                     
+                    <div class="coming-soon-badge">Coming Soon</div>
+                    <div class="placeholder-thumbnail">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line></svg>
+                    </div>
+                </div>
+
+                <div class="film-project-card coming-soon-card" 
+                     data-title="For Context" 
+                     data-roles="Director, Cinematographer, Writer, Editor" 
+                     data-desc="A student film in pre-production that will explore innovate camera and lighting work, as well as fourth wall breaks."> 
+                     
+                    <div class="coming-soon-badge">Coming Soon</div>
+                    <div class="placeholder-thumbnail">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line></svg>
+                    </div>
+                </div>
+
+                <div class="film-project-card coming-soon-card" 
+                     data-title="Burger Corp" 
+                     data-roles="Director, Writer" 
+                     data-desc="Feature film currently being written"> 
+                     
+                    <div class="coming-soon-badge">Coming Soon</div>
+                    <div class="placeholder-thumbnail">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line></svg>
+                    </div>
+                </div>
+
+                <div class="film-project-card coming-soon-card" 
+                     data-title="All that matters" 
+                     data-roles="Director, Writer" 
+                     data-desc="Feature film currently being written"> 
+                     
+                    <div class="coming-soon-badge">Coming Soon</div>
+                    <div class="placeholder-thumbnail">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line></svg>
+                    </div>
+                </div>
+
+                <div class="film-project-card coming-soon-card" 
+                     data-title="Man of the People" 
+                     data-roles="Director, Writer" 
+                     data-desc="Feature film currently being written"> 
+                     
+                    <div class="coming-soon-badge">Coming Soon</div>
+                    <div class="placeholder-thumbnail">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line></svg>
+                    </div>
+                </div>
+
             </div> 
             
             <div class="work-details">
-                <h3 id="dynamic-title">Hover over a project</h3>
-                <p id="dynamic-roles"></p>
-                <p id="dynamic-desc"></p>
+                <div class="details-content">
+                    <h3 id="dynamic-title">Hover over a project</h3>
+                    <p id="dynamic-roles"></p>
+                    <p id="dynamic-desc"></p>
+                </div>
             </div>
             
+        </section>
+
+        <section class="cta-primary">
+            <h2 class="cta-title">Let's make something together</h2>
+            <p class="cta-subtitle">I look forward to hearing from you.</p>
+            <div class="cta-links">
+                <button class="copy-email-btn" id="copy-email-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                    <span>bryce.connect@gmail.com</span>
+                </button>
+            </div>
         </section>
 
     </main>
 
     <div id="fullscreen-modal" class="fullscreen-modal">
-        
         <div id="modal-player-wrapper" class="video-player-wrapper">
             <video id="modal-video" class="fullscreen-video" autoplay loop playsinline></video>
             
@@ -116,6 +180,11 @@
                     <svg class="icon-expand" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline></svg>
                     <svg class="icon-shrink hidden" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polyline points="4 14 10 14 10 20"></polyline><polyline points="20 10 14 10 14 4"></polyline></svg>
                 </button>
+            </div>
+
+            <div class="timeline-container fade-ui" id="modal-timeline">
+                <div class="timeline-ticks"></div>
+                <div class="timeline-progress" id="modal-progress"></div>
             </div>
         </div>
     </div>
