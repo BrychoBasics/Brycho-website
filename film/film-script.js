@@ -245,7 +245,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 const relativeCenterY = (cardRect.top - detailsRect.top) + (cardRect.height / 2);
                 const targetY = relativeCenterY - (contentHeight / 2);
                 
-                detailsContent.style.transform = `translateY(${targetY}px)`;
+                // Clamp to keep text fully visible on screen
+                const containerHeight = window.innerHeight;
+                const clampedTargetY = Math.max(0, Math.min(targetY, containerHeight - contentHeight));
+                
+                detailsContent.style.transform = `translateY(${clampedTargetY}px)`;
             }
         }
     });
